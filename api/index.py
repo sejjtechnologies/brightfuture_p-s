@@ -1,4 +1,4 @@
-from vercel import wsgi
+from vercel_wsgi import handler
 from app import app
 
-wsgi.app = app
+app = handler(app)
