@@ -1,9 +1,7 @@
 import os
 from flask import Flask, render_template, session, redirect, url_for, request, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
 from dotenv import load_dotenv
-from flask_migrate import Migrate
 from datetime import timedelta, datetime, timezone
 from sqlalchemy import select
 
@@ -89,14 +87,17 @@ def format_eat_time(dt):
     return eat_time.strftime('%Y-%m-%d %I:%M %p')
 
 db = SQLAlchemy()
-migrate = Migrate()
+# migrate = Migrate()
 
 from models.auth_models import db, Role, SystemUser
 from models.admin_models import SchoolClass, Subject, Stream, ClassStream, TeacherAssignment, Notification
 from models.secretary_models import Pupil
 
 db.init_app(app)
-migrate.init_app(app, db)
+# migrate.init_app(app, db)
+
+with app.app_context():
+    db.create_all()
 
 # Auth routes
 @app.route('/auth/login', methods=['GET', 'POST'])

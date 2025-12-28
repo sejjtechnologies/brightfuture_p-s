@@ -5,7 +5,15 @@
       "src": "api/index.py",
       "use": "@vercel/python",
       "config": {
-        "includeFiles": ["api/**", "app.py", "models/**", "routes/**", "templates/**", "static/**", "requirements.txt", "migrations/**"]
+        "includeFiles": [
+          "api/**",
+          "app.py",
+          "models/**",
+          "routes/**",
+          "templates/**",
+          "static/**",
+          "requirements.txt"
+        ]
       }
     }
   ],
