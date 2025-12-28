@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Pupils</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+    />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+      }
+
+      #sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 16.666667%; /* col-md-2 equivalent */
+        min-height: 100vh;
+        background-color: lightblue !important;
+        z-index: 1000;
+        transition: transform 0.3s ease;
+      }
+
+      #welcome-card {
+        position: fixed;
+        top: 0;
+        left: 16.666667%; /* col-md-2 width */
+        right: 0;
+        background-color: lightgreen;
+        z-index: 999;
+        border: none;
+        border-radius: 0;
+      }
+
+      .main-content {
+        margin-top: 80px; /* Height of welcome card */
+        margin-left: 16.666667%; /* Width of sidebar */
+        padding: 20px;
+        min-height: calc(100vh - 80px);
+        overflow-y: auto;
+      }
+
+      .action-buttons {
+        white-space: nowrap;
+      }
+
+      @media (max-width: 768px) {
+        #sidebar {
+          width: 100%;
+          transform: translateX(0);
+        }
+
+        #sidebar.hidden {
+          transform: translateX(-100%);
+        }
+
+        #welcome-card {
+          left: 0;
+          top: 0;
+        }
+
+        .main-content {
+          margin-left: 0;
+          margin-top: 80px;
+        }
+
+        .btn-close {
+          font-size: 0.6em !important;
+        }
+
+        .table-responsive {
+          font-size: 12px;
+        }
+
+        .table td, .table th {
+          padding: 0.25rem 0.125rem;
+          font-size: 11px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 80px;
+        }
+
+        .table th {
+          font-size: 10px;
+          font-weight: bold;
+        }
+
+        .action-buttons .btn {
+          padding: 0.125rem 0.25rem;
+          font-size: 10px;
+        }
+
+        /* Hide less important columns on mobile */
+        .table td:nth-child(6), /* Address */
+        .table th:nth-child(6),
+        .table td:nth-child(7), /* Nationality */
+        .table th:nth-child(7),
+        .table td:nth-child(11), /* Parent Email */
+        .table th:nth-child(11),
+        .table td:nth-child(12), /* Parent Email */
+        .table th:nth-child(12),
+        .table td:nth-child(13), /* Emergency Contact */
+        .table th:nth-child(13),
+        .table td:nth-child(14), /* Emergency Phone */
+        .table th:nth-child(14) {
+          display: none;
+        }
+      }
+
+      @media (min-width: 769px) and (max-width: 1200px) {
+        .table-responsive {
+          font-size: 13px;
+        }
+
+        .table td, .table th {
+          padding: 0.375rem;
+        }
+      }
+
+      @media (min-width: 1201px) {
+        .table-responsive {
+          font-size: 14px;
+        }
+
+        .table td, .table th {
+          padding: 0.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Fixed Sidebar -->
+    <div id="sidebar" class="bg-light">
+      <button
+        class="btn-close"
+        style="position: absolute; top: 0; right: 0; font-size: 0.8em"
+        onclick="hideSidebar()"
+      ></button>
+      <div
+        class="container-fluid p-3 d-flex flex-column justify-content-center align-items-center"
+        style="height: calc(100vh - 60px)"
+      >
+        <div class="d-flex flex-column gap-2">
+          <button
+            class="btn btn-success btn-sm"
+            onclick="window.location.href='/secretary/'"
+          >
+            <i class="bi bi-house"></i> Dashboard
+          </button>
+          <button
+            class="btn btn-primary btn-sm"
+            onclick="window.location.href='/secretary/register-pupil'"
+          >
+            <i class="bi bi-person-plus"></i> Register Pupils
+          </button>
+          <button
+            class="btn btn-secondary btn-sm"
+            onclick="window.location.href='/secretary/manage-pupils'"
+          >
+            <i class="bi bi-people"></i> Manage Pupils
+          </button>
+        </div>
+      </div>
+      <div class="d-flex flex-column justify-content-end h-100 pb-3">
+        <a href="/auth/logout" class="btn btn-danger btn-sm">
+          <i class="bi bi-box-arrow-right"></i> Logout
+        </a>
+      </div>
+    </div>
+
+    <!-- Fixed Welcome Card -->
+    <div id="welcome-card" class="card">
+      <div class="card-body">
+        <button
+          id="showBtn"
+          style="
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 0.8em;
+            background: white;
+            border: 1px solid black;
+            color: black;
+            font-weight: bold;
+            display: none;
+            z-index: 1001;
+          "
+          onclick="showSidebar()"
+        >
+          <i class="bi bi-chevron-right"></i>
+        </button>
+        <h5 class="card-title" style="color: blue; font-weight: bold">
+          Welcome Secretary
+        </h5>
+      </div>
+    </div>
+
+    <!-- Scrollable Main Content -->
+    <div class="main-content">
+      <div class="card">
+        <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0">
+            <i class="bi bi-people"></i> Registered Pupils
+          </h5>
+          <div class="d-flex gap-2">
+            <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Search pupils..." style="width: 200px;">
+            <button class="btn btn-light btn-sm" onclick="clearSearch()">
+              <i class="bi bi-x-circle"></i> Clear
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              {% for category, message in messages %}
+                <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                  {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+              {% endfor %}
+            {% endif %}
+          {% endwith %}
+
+          <div class="table-responsive">
+            <table class="table table-striped table-hover" id="pupilsTable">
+              <thead class="table-dark">
+                <tr>
+                  <th>Admission No</th>
+                  <th>First Name</th>
+                  <th>Last Name</th>
+                  <th>Date of Birth</th>
+                  <th>Gender</th>
+                  <th>Address</th>
+                  <th>Nationality</th>
+                  <th>Phone</th>
+                  <th>Email</th>
+                  <th>Parent Name</th>
+                  <th>Parent Phone</th>
+                  <th>Parent Email</th>
+                  <th>Emergency Contact</th>
+                  <th>Emergency Phone</th>
+                  <th>Class</th>
+                  <th>Stream</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for pupil in pupils %}
+                <tr data-pupil-id="{{ pupil.id }}">
+                  <td class="fw-bold">{{ pupil.admission_number }}</td>
+                  <td>{{ pupil.first_name or '' }}</td>
+                  <td>{{ pupil.last_name or '' }}</td>
+                  <td>{{ pupil.date_of_birth.strftime('%Y-%m-%d') if pupil.date_of_birth else '' }}</td>
+                  <td>{{ pupil.gender or '' }}</td>
+                  <td>{{ pupil.address or '' }}</td>
+                  <td>{{ pupil.nationality or '' }}</td>
+                  <td>{{ pupil.phone_number or '' }}</td>
+                  <td>{{ pupil.email or '' }}</td>
+                  <td>{{ pupil.parent_name or '' }}</td>
+                  <td>{{ pupil.parent_phone or '' }}</td>
+                  <td>{{ pupil.parent_email or '' }}</td>
+                  <td>{{ pupil.emergency_contact_name or '' }}</td>
+                  <td>{{ pupil.emergency_contact_phone or '' }}</td>
+                  <td>{{ pupil.current_class.name if pupil.current_class else '' }}</td>
+                  <td>{{ pupil.current_stream.name if pupil.current_stream else '' }}</td>
+                  <td>{{ pupil.status or 'Active' }}</td>
+                  <td class="action-buttons">
+                    <a href="{{ url_for('secretary.edit_pupil', pupil_id=pupil.id) }}" class="btn btn-warning btn-sm me-1">
+                      <i class="bi bi-pencil"></i> Edit
+                    </a>
+                    <button class="btn btn-danger btn-sm" onclick="deletePupil({{ pupil.id }}, '{{ pupil.first_name }} {{ pupil.last_name }}')">
+                      <i class="bi bi-trash"></i> Delete
+                    </button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          {% if not pupils %}
+          <div class="text-center py-5">
+            <i class="bi bi-people text-muted" style="font-size: 3rem;"></i>
+            <h5 class="text-muted mt-3">No pupils registered yet</h5>
+            <p class="text-muted">Start by registering your first pupil.</p>
+            <a href="{{ url_for('secretary.register_pupil') }}" class="btn btn-primary">
+              <i class="bi bi-person-plus"></i> Register First Pupil
+            </a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deleteModalLabel">
+              <i class="bi bi-exclamation-triangle text-danger"></i> Confirm Delete
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>Are you sure you want to delete pupil <strong id="deletePupilName"></strong>?</p>
+            <p class="text-danger mb-0">This action cannot be undone.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete Pupil</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success/Error Toast -->
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+      <div id="actionToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+          <i class="bi bi-check-circle-fill text-success me-2" id="toastIcon"></i>
+          <strong class="me-auto" id="toastTitle">Success</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toastMessage"></div>
+      </div>
+    </div>
+
+    <script>
+      // Apply case conversion to editable fields
+      document.addEventListener('DOMContentLoaded', function() {
+        // Auto-hide flash messages after 2 seconds
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+          setTimeout(() => {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+          }, 2000);
+        });
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function() {
+          const searchTerm = this.value.toLowerCase();
+          const rows = document.querySelectorAll('#pupilsTable tbody tr');
+
+          rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(searchTerm) ? '' : 'none';
+          });
+        });
+      });
+
+      function clearSearch() {
+        document.getElementById('searchInput').value = '';
+        const rows = document.querySelectorAll('#pupilsTable tbody tr');
+        rows.forEach(row => row.style.display = '');
+      }
+
+      function deletePupil(pupilId, pupilName) {
+        document.getElementById('deletePupilName').textContent = pupilName;
+        const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        modal.show();
+
+        // Store pupil ID for deletion
+        document.getElementById('confirmDeleteBtn').onclick = function() {
+          fetch('/secretary/delete-pupil', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ pupil_id: pupilId })
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              // Remove the row from the table
+              const row = document.querySelector(`tr[data-pupil-id="${pupilId}"]`);
+              row.remove();
+              // Close modal
+              modal.hide();
+              // Show success message
+              showToast('Success', data.message, 'success');
+            } else {
+              showToast('Error', data.message, 'danger');
+            }
+          })
+          .catch(error => {
+            showToast('Error', 'An error occurred while deleting the pupil.', 'danger');
+          });
+        };
+      }
+
+      function showToast(title, message, type) {
+        // Create toast element
+        const toastContainer = document.querySelector('.toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.setAttribute('role', 'alert');
+        toast.innerHTML = `
+          <div class="toast-header">
+            <i class="bi bi-${type === 'success' ? 'check-circle-fill text-success' : 'exclamation-triangle-fill text-danger'} me-2"></i>
+            <strong class="me-auto">${title}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+          </div>
+          <div class="toast-body">${message}</div>
+        `;
+
+        toastContainer.appendChild(toast);
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+
+        // Remove toast after it's hidden
+        toast.addEventListener('hidden.bs.toast', () => {
+          toast.remove();
+        });
+      }
+
+      function hideSidebar() {
+        const sidebar = document.getElementById("sidebar");
+        const welcomeCard = document.getElementById("welcome-card");
+        const mainContent = document.querySelector(".main-content");
+
+        if (window.innerWidth <= 768) {
+          sidebar.classList.add("hidden");
+          welcomeCard.style.left = "0";
+          mainContent.style.marginLeft = "0";
+        } else {
+          sidebar.style.display = "none";
+          welcomeCard.style.left = "0";
+          mainContent.style.marginLeft = "0";
+        }
+        document.getElementById("showBtn").style.display = "block";
+      }
+
+      function showSidebar() {
+        const sidebar = document.getElementById("sidebar");
+        const welcomeCard = document.getElementById("welcome-card");
+        const mainContent = document.querySelector(".main-content");
+
+        sidebar.classList.remove("hidden");
+        sidebar.style.display = "block";
+
+        if (window.innerWidth > 768) {
+          welcomeCard.style.left = "16.666667%";
+          mainContent.style.marginLeft = "16.666667%";
+        } else {
+          welcomeCard.style.left = "0";
+          mainContent.style.marginLeft = "0";
+        }
+        document.getElementById("showBtn").style.display = "none";
+      }
+
+      // Handle window resize
+      window.addEventListener('resize', function() {
+        const sidebar = document.getElementById("sidebar");
+        const welcomeCard = document.getElementById("welcome-card");
+        const mainContent = document.querySelector(".main-content");
+
+        if (window.innerWidth > 768) {
+          if (!sidebar.classList.contains("hidden")) {
+            welcomeCard.style.left = "16.666667%";
+            mainContent.style.marginLeft = "16.666667%";
+          }
+        } else {
+          welcomeCard.style.left = "0";
+          mainContent.style.marginLeft = "0";
+        }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% include 'footer.html' %}
+  </body>
+</html></content>
+<parameter name="filePath">c:\Users\sejjusa\Desktop\BRIGHT FUTURE P.S\templates\secretary\manage_pupils.html

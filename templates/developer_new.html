@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SejjTechnologies - Full-Stack Developer & Digital Solutions</title>
+    <meta
+      name="description"
+      content="Professional full-stack developer specializing in web applications, mobile solutions, and digital transformation. Based in Entebbe, Wakiso-Uganda."
+    />
+    <meta
+      name="keywords"
+      content="full-stack developer, web development, mobile apps, digital solutions, Uganda, Entebbe"
+    />
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Bootstrap Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+    />
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --primary-color: #6366f1;
+        --secondary-color: #8b5cf6;
+        --accent-color: #06b6d4;
+        --dark-color: #1e293b;
+        --light-color: #f8fafc;
+        --gradient-primary: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+        --gradient-accent: linear-gradient(
+          135deg,
+          var(--accent-color),
+          var(--primary-color)
+        );
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1),
+          0 2px 4px -2px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+          0 4px 6px -4px rgb(0 0 0 / 0.1);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "JetBrains Mono", monospace;
+        line-height: 1.6;
+        color: var(--dark-color);
+        background: var(--light-color);
+      }
+
+      /* Navigation */
+      .navbar {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        padding: 1rem 0;
+        transition: all 0.3s ease;
+      }
+
+      .navbar-brand {
+        font-weight: 700;
+        font-size: 1.5rem;
+        color: var(--primary-color) !important;
+      }
+
+      .nav-link {
+        font-weight: 500;
+        color: var(--dark-color) !important;
+        transition: color 0.3s ease;
+      }
+
+      .nav-link:hover {
+        color: var(--primary-color) !important;
+      }
+
+      /* Hero Section */
+      .hero-section {
+        background: var(--gradient-primary);
+        color: white;
+        padding: 8rem 0 6rem;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.05"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+        opacity: 0.3;
+      }
+
+      .hero-content {
+        position: relative;
+        z-index: 2;
+      }
+
+      .hero-title {
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        font-weight: 700;
+        margin-bottom: 1rem;
+        line-height: 1.2;
+      }
+
+      .hero-subtitle {
+        font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+        opacity: 0.9;
+        margin-bottom: 2rem;
+        max-width: 600px;
+      }
+
+      .hero-stats {
+        display: flex;
+        gap: 2rem;
+        margin-top: 3rem;
+        flex-wrap: wrap;
+      }
+
+      .stat-item {
+        text-align: center;
+      }
+
+      .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        display: block;
+      }
+
+      .stat-label {
+        font-size: 0.9rem;
+        opacity: 0.8;
+      }
+
+      /* Cards */
+      .info-card {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        height: 100%;
+      }
+
+      .info-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1),
+          0 8px 10px -6px rgb(0 0 0 / 0.1);
+      }
+
+      .card-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .design-icon {
+        background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+        color: white;
+      }
+      .web-icon {
+        background: var(--gradient-primary);
+        color: white;
+      }
+      .mobile-icon {
+        background: var(--gradient-accent);
+        color: white;
+      }
+      .system-icon {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+      }
+      .ai-icon {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: white;
+      }
+      .consulting-icon {
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        color: white;
+      }
+
+      .card-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--dark-color);
+      }
+
+      /* Skills */
+      .skill-tag {
+        background: rgba(99, 102, 241, 0.1);
+        color: var(--primary-color);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        display: inline-block;
+        margin: 0.25rem;
+        border: 1px solid rgba(99, 102, 241, 0.2);
+      }
+
+      /* Portfolio */
+      .portfolio-item {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+        transition: all 0.3s ease;
+        height: 100%;
+      }
+
+      .portfolio-item:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .portfolio-image {
+        height: 200px;
+        background: var(--gradient-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 3rem;
+      }
+
+      .portfolio-content {
+        padding: 1.5rem;
+      }
+
+      .portfolio-tags {
+        margin-top: 1rem;
+      }
+
+      .portfolio-tag {
+        background: rgba(99, 102, 241, 0.1);
+        color: var(--primary-color);
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+        display: inline-block;
+      }
+
+      /* Contact */
+      .contact-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: rgba(99, 102, 241, 0.05);
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .contact-item:hover {
+        background: rgba(99, 102, 241, 0.1);
+        transform: translateX(5px);
+      }
+
+      .contact-item i {
+        color: var(--primary-color);
+        font-size: 1.5rem;
+      }
+
+      /* CTA Section */
+      .cta-section {
+        background: var(--gradient-primary);
+        color: white;
+        padding: 4rem 0;
+        text-align: center;
+      }
+
+      .cta-title {
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 700;
+        margin-bottom: 1rem;
+      }
+
+      .cta-subtitle {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin-bottom: 2rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .btn-custom {
+        background: white;
+        color: var(--primary-color);
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+      }
+
+      .btn-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        color: var(--primary-color);
+      }
+
+      /* Back Button */
+      .back-btn {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.9);
+        border: none;
+        color: var(--primary-color);
+        font-size: 1.25rem;
+        transition: all 0.3s ease;
+        z-index: 1000;
+        box-shadow: var(--shadow-md);
+      }
+
+      .back-btn:hover {
+        transform: scale(1.1);
+        color: white;
+        background: var(--primary-color);
+      }
+
+      /* Section Titles */
+      .section-title {
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 700;
+        color: var(--dark-color);
+        margin-bottom: 3rem;
+        text-align: center;
+        position: relative;
+      }
+
+      .section-title::after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 4px;
+        background: var(--gradient-primary);
+        border-radius: 2px;
+      }
+
+      /* Testimonials */
+      .testimonial-card {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: var(--shadow-md);
+        text-align: center;
+        height: 100%;
+      }
+
+      .testimonial-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: var(--gradient-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        margin: 0 auto 1rem;
+      }
+
+      .testimonial-text {
+        font-style: italic;
+        color: #64748b;
+        margin-bottom: 1rem;
+      }
+
+      .testimonial-author {
+        font-weight: 600;
+        color: var(--dark-color);
+      }
+
+      .testimonial-role {
+        color: #64748b;
+        font-size: 0.9rem;
+      }
+
+      /* Footer */
+      footer {
+        background: var(--dark-color);
+        color: white;
+        padding: 3rem 0 1rem;
+      }
+
+      .footer-links {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+      }
+
+      .footer-link {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+
+      .footer-link:hover {
+        color: white;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .hero-section {
+          padding: 4rem 0 3rem;
+        }
+
+        .hero-stats {
+          gap: 1rem;
+        }
+
+        .navbar-brand {
+          font-size: 1.25rem;
+        }
+
+        .info-card {
+          padding: 1.5rem;
+        }
+
+        .contact-item {
+          flex-direction: column;
+          text-align: center;
+          gap: 0.5rem;
+        }
+
+        .footer-links {
+          gap: 1rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .hero-title {
+          font-size: 2rem;
+        }
+
+        .hero-subtitle {
+          font-size: 1rem;
+        }
+
+        .section-title {
+          font-size: 1.75rem;
+        }
+
+        .hero-stats {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .stat-item {
+          margin-bottom: 1rem;
+        }
+      }
+
+      /* Animations */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .fade-in-up {
+        animation: fadeInUp 0.6s ease-out;
+      }
+
+      /* Scroll to top */
+      .scroll-top {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: var(--gradient-primary);
+        border: none;
+        color: white;
+        font-size: 1.25rem;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        z-index: 1000;
+      }
+
+      .scroll-top.show {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .scroll-top:hover {
+        transform: scale(1.1);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+      <div class="container">
+        <a class="navbar-brand" href="#home">SejjTechnologies</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
+            <li class="nav-item">
+              <a class="nav-link" href="#about">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#services">Services</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#portfolio">Portfolio</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#contact">Contact</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Back Button -->
+    <button class="back-btn" onclick="window.history.back()" title="Go Back">
+      <i class="bi bi-arrow-left"></i>
+    </button>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-section">
+      <div class="container">
+        <div class="hero-content text-center">
+          <h1 class="hero-title fade-in-up">SejjTechnologies</h1>
+          <p class="hero-subtitle fade-in-up">
+            Crafting Digital Solutions with Precision & Innovation
+          </p>
+          <p
+            class="fade-in-up"
+            style="font-size: 1.1rem; opacity: 0.9; margin-bottom: 2rem"
+          >
+            Full-Stack Developer & Digital Solutions Architect based in Entebbe,
+            Wakiso-Uganda
+          </p>
+
+          <div class="hero-stats fade-in-up">
+            <div class="stat-item">
+              <span class="stat-number">50+</span>
+              <span class="stat-label">Projects Completed</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">5+</span>
+              <span class="stat-label">Years Experience</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">100%</span>
+              <span class="stat-label">Client Satisfaction</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-5">
+      <div class="container">
+        <h2 class="section-title">About Me</h2>
+        <div class="row justify-content-center">
+          <div class="col-lg-8">
+            <div class="info-card text-center">
+              <div
+                class="card-icon"
+                style="
+                  background: var(--gradient-primary);
+                  width: 80px;
+                  height: 80px;
+                  margin: 0 auto 1.5rem;
+                "
+              >
+                <i class="bi bi-code-slash"></i>
+              </div>
+              <h3 class="mb-3">Sejj</h3>
+              <p class="mb-4" style="font-size: 1.1rem; line-height: 1.7">
+                Passionate full-stack developer with over 5 years of experience
+                in creating elegant, efficient, and user-centric digital
+                solutions. I specialize in web applications, mobile solutions,
+                and system integrations that solve real-world problems.
+              </p>
+              <p class="mb-4" style="color: #64748b">
+                Based in Entebbe, Wakiso-Uganda, I work with startups,
+                businesses, and educational institutions to transform their
+                ideas into powerful digital products. My expertise spans modern
+                web technologies, cloud platforms, and emerging technologies
+                like AI and machine learning.
+              </p>
+              <div class="row g-3 mt-4">
+                <div class="col-md-4">
+                  <div style="font-weight: 600; color: var(--primary-color)">
+                    Location
+                  </div>
+                  <div>Entebbe, Wakiso-Uganda</div>
+                </div>
+                <div class="col-md-4">
+                  <div style="font-weight: 600; color: var(--primary-color)">
+                    Experience
+                  </div>
+                  <div>5+ Years</div>
+                </div>
+                <div class="col-md-4">
+                  <div style="font-weight: 600; color: var(--primary-color)">
+                    Specialization
+                  </div>
+                  <div>Full-Stack Development</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-5 bg-light">
+      <div class="container">
+        <h2 class="section-title">What I Design & Build</h2>
+        <div class="row g-4">
+          <div class="col-lg-4 col-md-6">
+            <div class="info-card">
+              <div class="card-icon design-icon">
+                <i class="bi bi-palette"></i>
+              </div>
+              <h5 class="card-title">UI/UX Design</h5>
+              <p class="card-text text-muted">
+                Creating intuitive and beautiful user interfaces with modern
+                design principles, user-centered approaches, and seamless user
+                experiences that engage and convert.
+              </p>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6">
+            <div class="info-card">
+              <div class="card-icon web-icon">
+                <i class="bi bi-globe"></i>
+              </div>
+              <h5 class="card-title">Web Applications</h5>
+              <p class="card-text text-muted">
+                Building responsive, scalable web applications using modern
+                frameworks like React, Vue.js, and backend technologies
+                including Python Flask/Django and Node.js.
+              </p>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6">
+            <div class="info-card">
+              <div class="card-icon mobile-icon">
+                <i class="bi bi-phone"></i>
+              </div>
+              <h5 class="card-title">Mobile Solutions</h5>
+              <p class="card-text text-muted">
+                Developing cross-platform mobile applications using React Native
+                and Flutter that work seamlessly across iOS, Android, and web
+                platforms.
+              </p>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6">
+            <div class="info-card">
+              <div class="card-icon system-icon">
+                <i class="bi bi-gear"></i>
+              </div>
+              <h5 class="card-title">System Integration</h5>
+              <p class="card-text text-muted">
+                Connecting systems, APIs, and databases to create cohesive
+                digital ecosystems. Expertise in REST APIs, GraphQL,
+                microservices, and cloud integrations.
+              </p>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6">
+            <div class="info-card">
+              <div class="card-icon ai-icon">
+                <i class="bi bi-robot"></i>
+              </div>
+              <h5 class="card-title">AI & Machine Learning</h5>
+              <p class="card-text text-muted">
+                Implementing intelligent solutions using machine learning,
+                natural language processing, and computer vision to automate
+                processes and gain insights.
+              </p>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6">
+            <div class="info-card">
+              <div class="card-icon consulting-icon">
+                <i class="bi bi-lightbulb"></i>
+              </div>
+              <h5 class="card-title">Technical Consulting</h5>
+              <p class="card-text text-muted">
+                Providing expert guidance on technology stack selection,
+                architecture design, performance optimization, and digital
+                transformation strategies.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section class="py-5">
+      <div class="container">
+        <h2 class="section-title">Technical Expertise</h2>
+        <div class="row justify-content-center">
+          <div class="col-lg-10">
+            <div class="info-card">
+              <div class="tech-stack">
+                <span class="skill-tag">Python</span>
+                <span class="skill-tag">Flask/Django</span>
+                <span class="skill-tag">JavaScript</span>
+                <span class="skill-tag">TypeScript</span>
+                <span class="skill-tag">React/Vue.js</span>
+                <span class="skill-tag">Node.js</span>
+                <span class="skill-tag">HTML5/CSS3</span>
+                <span class="skill-tag">Bootstrap/Tailwind</span>
+                <span class="skill-tag">PostgreSQL/MySQL</span>
+                <span class="skill-tag">MongoDB</span>
+                <span class="skill-tag">Redis</span>
+                <span class="skill-tag">Docker</span>
+                <span class="skill-tag">AWS/Azure</span>
+                <span class="skill-tag">Git/CI-CD</span>
+                <span class="skill-tag">REST APIs</span>
+                <span class="skill-tag">GraphQL</span>
+                <span class="skill-tag">Machine Learning</span>
+                <span class="skill-tag">TensorFlow</span>
+                <span class="skill-tag">PyTorch</span>
+                <span class="skill-tag">Linux/DevOps</span>
+                <span class="skill-tag">Agile/Scrum</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section id="portfolio" class="py-5 bg-light">
+      <div class="container">
+        <h2 class="section-title">Featured Projects</h2>
+        <div class="row g-4">
+          <div class="col-lg-4 col-md-6">
+            <div class="portfolio-item">
+              <div class="portfolio-image">
+                <i class="bi bi-building"></i>
+              </div>
+              <div class="portfolio-content">
+                <h5 class="card-title">School Management System</h5>
+                <p class="text-muted">
+                  Comprehensive school management solution with student
+                  enrollment, attendance tracking, grade management, and
+                  parent-teacher communication portals.
+                </p>
+                <div class="portfolio-tags">
+                  <span class="portfolio-tag">Flask</span>
+                  <span class="portfolio-tag">PostgreSQL</span>
+                  <span class="portfolio-tag">Bootstrap</span>
+                  <span class="portfolio-tag">REST API</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6">
+            <div class="portfolio-item">
+              <div class="portfolio-image">
+                <i class="bi bi-cart"></i>
+              </div>
+              <div class="portfolio-content">
+                <h5 class="card-title">E-Commerce Platform</h5>
+                <p class="text-muted">
+                  Full-featured e-commerce solution with payment integration,
+                  inventory management, order tracking, and admin dashboard for
+                  business analytics.
+                </p>
+                <div class="portfolio-tags">
+                  <span class="portfolio-tag">React</span>
+                  <span class="portfolio-tag">Node.js</span>
+                  <span class="portfolio-tag">MongoDB</span>
+                  <span class="portfolio-tag">Stripe</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6">
+            <div class="portfolio-item">
+              <div class="portfolio-image">
+                <i class="bi bi-heart-pulse"></i>
+              </div>
+              <div class="portfolio-content">
+                <h5 class="card-title">Healthcare Management</h5>
+                <p class="text-muted">
+                  Patient management system with appointment scheduling, medical
+                  records, prescription tracking, and telemedicine integration.
+                </p>
+                <div class="portfolio-tags">
+                  <span class="portfolio-tag">Django</span>
+                  <span class="portfolio-tag">PostgreSQL</span>
+                  <span class="portfolio-tag">Vue.js</span>
+                  <span class="portfolio-tag">Docker</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6">
+            <div class="portfolio-item">
+              <div class="portfolio-image">
+                <i class="bi bi-graph-up"></i>
+              </div>
+              <div class="portfolio-content">
+                <h5 class="card-title">Business Analytics Dashboard</h5>
+                <p class="text-muted">
+                  Real-time analytics platform with interactive charts, KPI
+                  tracking, automated reporting, and predictive insights using
+                  machine learning.
+                </p>
+                <div class="portfolio-tags">
+                  <span class="portfolio-tag">Python</span>
+                  <span class="portfolio-tag">React</span>
+                  <span class="portfolio-tag">D3.js</span>
+                  <span class="portfolio-tag">TensorFlow</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6">
+            <div class="portfolio-item">
+              <div class="portfolio-image">
+                <i class="bi bi-chat-dots"></i>
+              </div>
+              <div class="portfolio-content">
+                <h5 class="card-title">Communication Platform</h5>
+                <p class="text-muted">
+                  Multi-channel communication platform with real-time messaging,
+                  video calls, file sharing, and integration with popular
+                  business tools.
+                </p>
+                <div class="portfolio-tags">
+                  <span class="portfolio-tag">Node.js</span>
+                  <span class="portfolio-tag">Socket.io</span>
+                  <span class="portfolio-tag">WebRTC</span>
+                  <span class="portfolio-tag">MongoDB</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6">
+            <div class="portfolio-item">
+              <div class="portfolio-image">
+                <i class="bi bi-robot"></i>
+              </div>
+              <div class="portfolio-content">
+                <h5 class="card-title">AI-Powered Assistant</h5>
+                <p class="text-muted">
+                  Intelligent virtual assistant with natural language
+                  processing, task automation, and integration with business
+                  applications.
+                </p>
+                <div class="portfolio-tags">
+                  <span class="portfolio-tag">Python</span>
+                  <span class="portfolio-tag">NLP</span>
+                  <span class="portfolio-tag">OpenAI</span>
+                  <span class="portfolio-tag">FastAPI</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="py-5">
+      <div class="container">
+        <h2 class="section-title">Client Testimonials</h2>
+        <div class="row g-4">
+          <div class="col-lg-4 col-md-6">
+            <div class="testimonial-card">
+              <div class="testimonial-avatar">
+                <i class="bi bi-person"></i>
+              </div>
+              <p class="testimonial-text">
+                "Sejj delivered our school management system on time and
+                exceeded our expectations. The system is intuitive, reliable,
+                and has significantly improved our administrative efficiency."
+              </p>
+              <div class="testimonial-author">Sarah Johnson</div>
+              <div class="testimonial-role">
+                School Director, Bright Future P.S
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6">
+            <div class="testimonial-card">
+              <div class="testimonial-avatar">
+                <i class="bi bi-person"></i>
+              </div>
+              <p class="testimonial-text">
+                "Working with Sejj was a game-changer for our e-commerce
+                platform. His technical expertise and attention to detail
+                resulted in a robust, scalable solution that drives our business
+                growth."
+              </p>
+              <div class="testimonial-author">Michael Chen</div>
+              <div class="testimonial-role">CEO, TechStart Solutions</div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6">
+            <div class="testimonial-card">
+              <div class="testimonial-avatar">
+                <i class="bi bi-person"></i>
+              </div>
+              <p class="testimonial-text">
+                "The healthcare management system Sejj built for us has
+                transformed patient care. It's user-friendly, secure, and
+                integrates perfectly with our existing workflows."
+              </p>
+              <div class="testimonial-author">Dr. Emily Rodriguez</div>
+              <div class="testimonial-role">
+                Medical Director, HealthFirst Clinic
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+      <div class="container">
+        <h2 class="cta-title">Ready to Bring Your Ideas to Life?</h2>
+        <p class="cta-subtitle">
+          Let's discuss your project and create something amazing together.
+          Whether it's a web application, mobile app, or system integration, I'm
+          here to help you succeed.
+        </p>
+        <a href="#contact" class="btn-custom">Start Your Project</a>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-5">
+      <div class="container">
+        <h2 class="section-title">Get In Touch</h2>
+        <div class="row justify-content-center">
+          <div class="col-lg-10">
+            <div class="info-card">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <div class="contact-item">
+                    <i class="bi bi-envelope"></i>
+                    <div>
+                      <strong>Primary Email</strong><br />
+                      <a
+                        href="mailto:sejjtechnologies@gmail.com"
+                        class="text-decoration-none"
+                        >sejjtechnologies@gmail.com</a
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="contact-item">
+                    <i class="bi bi-envelope"></i>
+                    <div>
+                      <strong>Secondary Email</strong><br />
+                      <a
+                        href="mailto:sejj78w@gmail.com"
+                        class="text-decoration-none"
+                        >sejj78w@gmail.com</a
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="contact-item">
+                    <i class="bi bi-geo-alt"></i>
+                    <div>
+                      <strong>Location</strong><br />
+                      <span>Entebbe, Wakiso-Uganda</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="contact-item">
+                    <i class="bi bi-telephone"></i>
+                    <div>
+                      <strong>Phone</strong><br />
+                      <a href="tel:+256700000000" class="text-decoration-none"
+                        >+256 700 000 000</a
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="contact-item">
+                    <i class="bi bi-linkedin"></i>
+                    <div>
+                      <strong>LinkedIn</strong><br />
+                      <a
+                        href="https://linkedin.com/in/sejjtechnologies"
+                        target="_blank"
+                        class="text-decoration-none"
+                        >linkedin.com/in/sejjtechnologies</a
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="contact-item">
+                    <i class="bi bi-github"></i>
+                    <div>
+                      <strong>GitHub</strong><br />
+                      <a
+                        href="https://github.com/sejjtechnologies"
+                        target="_blank"
+                        class="text-decoration-none"
+                        >github.com/sejjtechnologies</a
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="contact-item">
+                    <i class="bi bi-globe"></i>
+                    <div>
+                      <strong>Portfolio</strong><br />
+                      <a
+                        href="https://sejjtechnologies.com"
+                        target="_blank"
+                        class="text-decoration-none"
+                        >sejjtechnologies.com</a
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="contact-item">
+                    <i class="bi bi-whatsapp"></i>
+                    <div>
+                      <strong>WhatsApp</strong><br />
+                      <a
+                        href="https://wa.me/256700000000"
+                        target="_blank"
+                        class="text-decoration-none"
+                        >+256 700 000 000</a
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <div class="footer-links">
+          <a href="#home" class="footer-link">Home</a>
+          <a href="#about" class="footer-link">About</a>
+          <a href="#services" class="footer-link">Services</a>
+          <a href="#portfolio" class="footer-link">Portfolio</a>
+          <a href="#contact" class="footer-link">Contact</a>
+        </div>
+        <div class="text-center">
+          <p class="mb-2">© 2025 SejjTechnologies. All rights reserved.</p>
+          <p class="mb-0" style="opacity: 0.8">
+            Crafting the future, one line of code at a time.
+          </p>
+          <p class="mt-2" style="font-size: 0.9rem; opacity: 0.6">
+            Based in Entebbe, Wakiso-Uganda • Available for remote & on-site
+            projects
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Scroll to Top Button -->
+    <button class="scroll-top" id="scrollTop">
+      <i class="bi bi-arrow-up"></i>
+    </button>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      // Smooth scrolling for navigation links
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute("href"));
+          if (target) {
+            target.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          }
+        });
+      });
+
+      // Scroll to top functionality
+      const scrollTopBtn = document.getElementById("scrollTop");
+      window.addEventListener("scroll", () => {
+        if (window.pageYOffset > 300) {
+          scrollTopBtn.classList.add("show");
+        } else {
+          scrollTopBtn.classList.remove("show");
+        }
+      });
+
+      scrollTopBtn.addEventListener("click", () => {
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+      });
+
+      // Navbar background on scroll
+      const navbar = document.querySelector(".navbar");
+      window.addEventListener("scroll", () => {
+        if (window.scrollY > 50) {
+          navbar.style.background = "rgba(255, 255, 255, 0.98)";
+        } else {
+          navbar.style.background = "rgba(255, 255, 255, 0.95)";
+        }
+      });
+
+      // Animate elements on scroll
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: "0px 0px -50px 0px",
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity = "1";
+            entry.target.style.transform = "translateY(0)";
+          }
+        });
+      }, observerOptions);
+
+      // Observe all cards and sections
+      document
+        .querySelectorAll(".info-card, .portfolio-item, .testimonial-card")
+        .forEach((el) => {
+          el.style.opacity = "0";
+          el.style.transform = "translateY(30px)";
+          el.style.transition = "opacity 0.6s ease, transform 0.6s ease";
+          observer.observe(el);
+        });
+    </script>
+    {% include 'footer.html' %}
+  </body>
+</html>

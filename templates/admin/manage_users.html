@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Users</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+    />
+    <style>
+      @media (max-width: 768px) {
+        .btn-close {
+          font-size: 0.6em !important;
+        }
+        .table td, .table th {
+          font-size: 0.7em;
+          padding: 0.3rem;
+        }
+        .btn {
+          font-size: 0.7em;
+          padding: 0.2rem 0.4rem;
+        }
+        .form-control, .form-select {
+          font-size: 0.7em;
+          padding: 0.2rem 0.4rem;
+        }
+      }
+      .form-container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .table-responsive {
+        max-height: 70vh;
+        overflow-y: auto;
+      }
+      .editable {
+        border: none;
+        background: transparent;
+      }
+      .editable:focus {
+        background: white;
+        border: 1px solid #ccc;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12">
+          <div
+            class="d-flex justify-content-center align-items-center mt-3 mb-4"
+          >
+            <h2>Manage Users</h2>
+          </div>
+          {% with messages = get_flashed_messages() %} {% if messages %}
+          <div id="flash-message" class="alert alert-info" role="alert">
+            {% for message in messages %} {{ message }} {% endfor %}
+          </div>
+          {% endif %} {% endwith %}
+          <div class="form-container">
+            <div class="card">
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-striped table-hover table-sm">
+                    <thead class="table-dark">
+                      <tr>
+                        <th>#</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Password</th>
+                        <th>Role</th>
+                        <th>Last Login</th>
+                        <th>Created At</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for user in users %}
+                      <tr data-user-id="{{ user.id }}">
+                        <td>{{ loop.index }}</td>
+                        <td><input type="text" class="form-control editable" value="{{ user.username }}" readonly></td>
+                        <td><input type="email" class="form-control editable" value="{{ user.email }}" readonly></td>
+                        <td><input type="password" class="form-control editable" placeholder="Leave blank to keep current" readonly></td>
+                        <td>
+                          <select class="form-select editable" disabled>
+                            {% for role in roles %}
+                            <option value="{{ role.id }}" {% if role.id == user.role_id %}selected{% endif %} {% if role.name == 'Admin' %}disabled{% endif %}>{{ role.name }}</option>
+                            {% endfor %}
+                          </select>
+                        </td>
+                        <td>{{ user.last_login_kampala }}</td>
+                        <td>{{ user.created_at_kampala }}</td>
+                        <td>
+                          <button class="btn btn-sm btn-warning edit-btn" onclick="editRow(this)" {% if user.role.name == 'Admin' %}disabled{% endif %}>Edit</button>
+                          <button class="btn btn-sm btn-success save-btn" style="display:none;" onclick="saveRow(this)">Save</button>
+                          <button class="btn btn-sm btn-danger" onclick="showDeleteModal({{ user.id }})" {% if user.role.name == 'Admin' %}disabled{% endif %}>Delete</button>
+                        </td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+                <div id="passwordWarning" class="alert alert-danger mt-2" style="display: none;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      function editRow(btn) {
+        const row = btn.closest('tr');
+        const inputs = row.querySelectorAll('.editable');
+        inputs.forEach(input => {
+          input.removeAttribute('readonly');
+          input.removeAttribute('disabled');
+        });
+        btn.style.display = 'none';
+        row.querySelector('.save-btn').style.display = 'inline-block';
+      }
+
+      function saveRow(btn) {
+        const row = btn.closest('tr');
+        const userId = row.dataset.userId;
+        const username = row.querySelector('input[type="text"]').value;
+        const email = row.querySelector('input[type="email"]').value;
+        const password = row.querySelector('input[type="password"]').value;
+        const roleId = row.querySelector('select').value;
+
+        // Password validation
+        const minLength = {{ min_password_length }};
+        if (password && password.length < minLength) {
+          const warning = document.getElementById('passwordWarning');
+          warning.textContent = `Password must be at least ${minLength} characters long.`;
+          warning.style.display = 'block';
+          row.querySelector('input[type="password"]').focus();
+          return;
+        } else {
+          document.getElementById('passwordWarning').style.display = 'none';
+        }
+
+        // Create form and submit
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ url_for("admin.manage_users") }}';
+
+        const fields = [
+          {name: 'user_id', value: userId},
+          {name: 'username', value: username},
+          {name: 'email', value: email},
+          {name: 'password', value: password},
+          {name: 'role_id', value: roleId}
+        ];
+
+        fields.forEach(field => {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = field.name;
+          input.value = field.value;
+          form.appendChild(input);
+        });
+
+        document.body.appendChild(form);
+        form.submit();
+      }
+      function showDeleteModal(userId) {
+        const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        document.getElementById('deleteForm').action = '{{ url_for("admin.delete_user", user_id=0) }}'.replace('0', userId);
+        modal.show();
+      }
+    </script>
+    <script>
+      // Hide flash message after 2 seconds
+      setTimeout(() => {
+        const flash = document.getElementById("flash-message");
+        if (flash) flash.style.display = "none";
+      }, 2000);
+    </script>
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            Are you sure you want to delete this user? This action cannot be undone.
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <form id="deleteForm" method="POST" style="display:inline;">
+              <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

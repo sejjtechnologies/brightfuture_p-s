@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Set Current Term & Academic Year</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+    />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+      }
+
+      #sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 16.666667%; /* col-md-2 equivalent */
+        min-height: 100vh;
+        background-color: lightblue !important;
+        z-index: 1000;
+        transition: transform 0.3s ease;
+      }
+
+      #welcome-card {
+        position: fixed;
+        top: 0;
+        left: 16.666667%; /* col-md-2 width */
+        right: 0;
+        background-color: lightgreen;
+        z-index: 999;
+        border: none;
+        border-radius: 0;
+      }
+
+      .main-content {
+        margin-top: 80px; /* Height of welcome card */
+        margin-left: 16.666667%; /* Width of sidebar */
+        padding: 20px;
+        min-height: calc(100vh - 80px);
+        overflow-y: auto;
+      }
+
+      @media (max-width: 768px) {
+        #sidebar {
+          width: 100%;
+          transform: translateX(0);
+        }
+
+        #sidebar.hidden {
+          transform: translateX(-100%);
+        }
+
+        #welcome-card {
+          left: 0;
+          top: 0;
+        }
+
+        .main-content {
+          margin-left: 0;
+          margin-top: 80px;
+        }
+
+        .btn-close {
+          font-size: 0.6em !important;
+        }
+
+        /* Responsive form inputs for mobile */
+        .form-control, .form-select, .form-control-sm {
+          font-size: 14px !important;
+          padding: 0.375rem 0.5rem !important;
+          height: calc(1.5em + 0.75rem + 2px) !important;
+        }
+
+        textarea.form-control {
+          font-size: 14px !important;
+          padding: 0.375rem 0.5rem !important;
+        }
+
+        .form-label {
+          font-size: 14px !important;
+          margin-bottom: 0.25rem !important;
+        }
+      }
+
+      @media (min-width: 769px) and (max-width: 1200px) {
+        /* Medium screens - slightly larger inputs */
+        .form-control, .form-select {
+          font-size: 16px !important;
+          padding: 0.5rem 0.75rem !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Fixed Sidebar -->
+    <div id="sidebar" class="bg-light">
+      <button
+        class="btn-close"
+        style="position: absolute; top: 0; right: 0; font-size: 0.8em"
+        onclick="hideSidebar()"
+      ></button>
+      <div
+        class="container-fluid p-3 d-flex flex-column justify-content-center align-items-center"
+        style="gap: 0.5rem"
+      >
+        <button
+          class="btn btn-danger btn-sm d-flex align-items-center justify-content-center"
+          onclick="window.location.href='{{ url_for('admin.dashboard') }}'"
+          style="min-width: 180px"
+        >
+          <i class="bi bi-house me-2" style="color: black"></i>
+          Dashboard
+        </button>
+        <button
+          class="btn btn-danger btn-sm d-flex align-items-center justify-content-center"
+          onclick="toggleStaffButtons()"
+          style="min-width: 180px"
+        >
+          <i class="bi bi-people me-2" style="color: black"></i> Staff & Role
+          Management
+        </button>
+        <button
+          class="btn btn-danger btn-sm d-flex align-items-center justify-content-center"
+          onclick="toggleClassButtons()"
+          style="min-width: 180px"
+        >
+          <i class="bi bi-book me-2" style="color: black"></i> Class, Subjects &
+          Streams Setup/ Teacher Assignment
+        </button>
+        <button
+          class="btn btn-danger btn-sm d-flex align-items-center justify-content-center"
+          onclick="toggleAcademicButtons()"
+          style="min-width: 180px"
+        >
+          <i class="bi bi-calendar-event me-2" style="color: black"></i>
+          Academic Year, Term & Exam Schedule
+        </button>
+        <button
+          class="btn btn-danger btn-sm d-flex align-items-center justify-content-center"
+          style="min-width: 180px"
+        >
+          <i class="bi bi-table me-2" style="color: black"></i> Manage Class Time
+          Tables
+        </button>
+        <button
+          class="btn btn-danger btn-sm d-flex align-items-center justify-content-center"
+          style="min-width: 180px"
+        >
+          <i class="bi bi-bar-chart me-2" style="color: black"></i> School-Wide
+          Reporting
+        </button>
+        <button
+          class="btn btn-danger btn-sm d-flex align-items-center justify-content-center"
+          onclick="toggleNotificationButtons()"
+          style="min-width: 180px"
+        >
+          <i class="bi bi-bell me-2" style="color: black"></i> Notifications &
+          Announcements
+        </button>
+        <button
+          class="btn btn-danger btn-sm d-flex align-items-center justify-content-center"
+          onclick="window.location.href='{{ url_for('admin.system_settings') }}'"
+          style="min-width: 180px"
+        >
+          <i class="bi bi-gear me-2" style="color: black"></i> System Settings
+        </button>
+      </div>
+      <div class="mt-auto pb-3 px-2">
+        <a
+          href="/auth/logout"
+          class="btn btn-danger btn-sm w-100 d-flex align-items-center"
+          ><i class="bi bi-box-arrow-right"></i> Logout</a
+        >
+      </div>
+    </div>
+
+    <!-- Fixed Welcome Card -->
+    <div id="welcome-card" class="card">
+      <div class="card-body">
+        <button
+          id="showBtn"
+          style="
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 0.8em;
+            background: white;
+            border: 1px solid black;
+            color: black;
+            font-weight: bold;
+            display: none;
+            z-index: 1001;
+          "
+          onclick="showSidebar()"
+        >
+          <i class="bi bi-chevron-right"></i>
+        </button>
+        <h5 class="card-title" style="color: blue; font-weight: bold">
+          Welcome Admin
+        </h5>
+      </div>
+    </div>
+
+    <!-- Scrollable Main Content -->
+    <div class="main-content">
+      <div class="card">
+        <div class="card-header bg-secondary text-white">
+          <h5 class="card-title mb-0">
+            <i class="bi bi-calendar-check"></i> Set Current Term & Academic Year
+          </h5>
+        </div>
+        <div class="card-body">
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              {% for category, message in messages %}
+                <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                  {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+              {% endfor %}
+            {% endif %}
+          {% endwith %}
+
+          <form method="POST" action="{{ url_for('admin.set_current_term_year') }}">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="current_academic_year_id" class="form-label">Current Academic Year</label>
+                  <select class="form-select" id="current_academic_year_id" name="current_academic_year_id" required>
+                    <option value="">Select Academic Year</option>
+                    {% for academic_year in academic_years %}
+                      <option value="{{ academic_year.id }}" {% if current_academic_year_id and academic_year.id == current_academic_year_id|int %}selected{% endif %}>
+                        {{ academic_year.name }} ({{ academic_year.start_date.strftime('%Y') }}-{{ academic_year.end_date.strftime('%Y') }})
+                      </option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="current_term_id" class="form-label">Current Term</label>
+                  <select class="form-select" id="current_term_id" name="current_term_id" required>
+                    <option value="">Select Term</option>
+                    {% for term in terms %}
+                      <option value="{{ term.id }}" {% if current_term_id and term.id == current_term_id|int %}selected{% endif %}>
+                        {{ term.name }} ({{ term.academic_year.name }})
+                      </option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-success" id="submitBtn">
+                <i class="bi bi-check-circle"></i> Set Current Term & Year
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hidden button groups for sidebar functionality -->
+    <div
+      style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); flex-direction: column; align-items: center; justify-content: flex-start; z-index: 1000; gap: 3px;"
+      id="staff-buttons"
+    >
+      <button onclick="window.location.href='{{ url_for('admin.create_staff') }}'" class="btn btn-success responsive-btn" style="width: 140px;">
+        <i class="bi bi-person-plus"></i> Create Staff
+      </button>
+      <button onclick="window.location.href='{{ url_for('admin.manage_users') }}'" class="btn btn-success responsive-btn" style="width: 140px;">
+        <i class="bi bi-people"></i> Manage Users
+      </button>
+    </div>
+
+    <div
+      style="display: none; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); flex-direction: column; align-items: center; justify-content: flex-start; z-index: 1000; gap: 3px;"
+      id="class-buttons"
+    >
+      <button onclick="window.location.href='{{ url_for('admin.create_class') }}'" class="btn btn-success responsive-btn" style="width: 140px;">
+        <i class="bi bi-plus-circle"></i> Create Class
+      </button>
+      <button onclick="window.location.href='{{ url_for('admin.manage_classes') }}'" class="btn btn-success responsive-btn" style="width: 140px;">
+        <i class="bi bi-list"></i> Manage Classes
+      </button>
+      <button onclick="window.location.href='{{ url_for('admin.create_subject') }}'" class="btn btn-success responsive-btn" style="width: 140px;">
+        <i class="bi bi-plus-circle"></i> Create Subject
+      </button>
+      <button onclick="window.location.href='{{ url_for('admin.manage_subjects') }}'" class="btn btn-success responsive-btn" style="width: 140px;">
+        <i class="bi bi-list"></i> Manage Subjects
+      </button>
+      <button onclick="window.location.href='{{ url_for('admin.create_stream') }}'" class="btn btn-success responsive-btn" style="width: 140px;">
+        <i class="bi bi-plus-circle"></i> Create Stream
+      </button>
+      <button onclick="window.location.href='{{ url_for('admin.manage_streams') }}'" class="btn btn-success responsive-btn" style="width: 140px;">
+        <i class="bi bi-list"></i> Manage Streams
+      </button>
+      <button onclick="window.location.href='{{ url_for('admin.assign_teachers') }}'" class="btn btn-success responsive-btn" style="width: 140px;">
+        <i class="bi bi-person-check"></i> Assign Teachers
+      </button>
+      <button onclick="window.location.href='{{ url_for('admin.manage_assignments') }}'" class="btn btn-success responsive-btn" style="width: 140px;">
+        <i class="bi bi-gear"></i> Manage Assignments
+      </button>
+    </div>
+
+    <div
+      style="display: none; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); flex-direction: column; align-items: center; justify-content: flex-start; z-index: 1000; gap: 3px;"
+      id="academic-buttons"
+    >
+      <button onclick="window.location.href='{{ url_for('admin.create_academic_year') }}'" class="btn btn-success responsive-btn" style="width: 140px;">
+        <i class="bi bi-calendar-plus"></i> Create Academic Year
+      </button>
+      <button onclick="window.location.href='{{ url_for('admin.manage_academic_years') }}'" class="btn btn-success responsive-btn" style="width: 140px;">
+        <i class="bi bi-calendar-check"></i> Manage Academic Years
+      </button>
+      <button onclick="window.location.href='{{ url_for('admin.create_term') }}'" class="btn btn-success responsive-btn" style="width: 140px;">
+        <i class="bi bi-calendar-week"></i> Create Term
+      </button>
+      <button onclick="window.location.href='{{ url_for('admin.manage_terms') }}'" class="btn btn-success responsive-btn" style="width: 140px;">
+        <i class="bi bi-calendar-range"></i> Manage Terms
+      </button>
+      <button onclick="window.location.href='{{ url_for('admin.create_exam_schedule') }}'" class="btn btn-success responsive-btn" style="width: 140px;">
+        <i class="bi bi-calendar-event"></i> Create Exam Schedule
+      </button>
+      <button onclick="window.location.href='{{ url_for('admin.manage_exam_schedules') }}'" class="btn btn-success responsive-btn" style="width: 140px;">
+        <i class="bi bi-calendar-x"></i> Manage Exam Schedules
+      </button>
+      <button onclick="window.location.href='{{ url_for('admin.set_current_term_year') }}'" class="btn btn-success responsive-btn" style="width: 140px;">
+        <i class="bi bi-calendar-check"></i> Set Current Term & Academic Year
+      </button>
+    </div>
+
+    <div
+      style="display: none; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); flex-direction: column; align-items: center; justify-content: flex-start; z-index: 1000; gap: 3px;"
+      id="notification-buttons"
+    >
+      <button onclick="window.location.href='{{ url_for('admin.create_notification') }}'" class="btn btn-success responsive-btn" style="width: 140px;">
+        <i class="bi bi-bell-plus"></i> Create Notification
+      </button>
+      <button onclick="window.location.href='{{ url_for('admin.manage_notifications') }}'" class="btn btn-success responsive-btn" style="width: 140px;">
+        <i class="bi bi-bell-fill"></i> Manage Notifications
+      </button>
+    </div>
+
+    <script>
+      // Check if page is loaded in an iframe
+      if (window.self !== window.top) {
+        // Hide sidebar and welcome card when in iframe
+        document.addEventListener('DOMContentLoaded', function() {
+          const sidebar = document.getElementById('sidebar');
+          const welcomeCard = document.getElementById('welcome-card');
+          const mainContent = document.querySelector('.main-content');
+
+          if (sidebar) sidebar.style.display = 'none';
+          if (welcomeCard) welcomeCard.style.display = 'none';
+          if (mainContent) {
+            mainContent.style.marginLeft = '0';
+            mainContent.style.marginTop = '20px';
+          }
+        });
+      }
+
+      // Auto-hide flash messages after 2 seconds
+      document.addEventListener('DOMContentLoaded', function() {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+          setTimeout(() => {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+          }, 2000);
+        });
+      });
+
+      // Handle form submission
+      document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        const submitBtn = document.getElementById('submitBtn');
+
+        if (form && submitBtn) {
+          form.addEventListener('submit', function(e) {
+            // Change button text and disable it
+            submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Saving...';
+            submitBtn.disabled = true;
+
+            // The form will submit normally, and the page will reload with flash messages
+            // No need to prevent default since we want the form to submit
+          });
+        }
+      });
+
+      function hideSidebar() {
+        const sidebar = document.getElementById("sidebar");
+        const welcomeCard = document.getElementById("welcome-card");
+        const mainContent = document.querySelector(".main-content");
+
+        if (window.innerWidth <= 768) {
+          sidebar.classList.add("hidden");
+          welcomeCard.style.left = "0";
+          mainContent.style.marginLeft = "0";
+        } else {
+          sidebar.style.display = "none";
+          welcomeCard.style.left = "0";
+          mainContent.style.marginLeft = "0";
+        }
+        document.getElementById("showBtn").style.display = "block";
+      }
+
+      function showSidebar() {
+        const sidebar = document.getElementById("sidebar");
+        const welcomeCard = document.getElementById("welcome-card");
+        const mainContent = document.querySelector(".main-content");
+
+        sidebar.classList.remove("hidden");
+        sidebar.style.display = "block";
+
+        if (window.innerWidth > 768) {
+          welcomeCard.style.left = "16.666667%";
+          mainContent.style.marginLeft = "16.666667%";
+        } else {
+          welcomeCard.style.left = "0";
+          mainContent.style.marginLeft = "0";
+        }
+        document.getElementById("showBtn").style.display = "none";
+      }
+
+      // Handle window resize
+      window.addEventListener('resize', function() {
+        const sidebar = document.getElementById("sidebar");
+        const welcomeCard = document.getElementById("welcome-card");
+        const mainContent = document.querySelector(".main-content");
+
+        if (window.innerWidth > 768) {
+          if (!sidebar.classList.contains("hidden")) {
+            welcomeCard.style.left = "16.666667%";
+            mainContent.style.marginLeft = "16.666667%";
+          }
+        } else {
+          welcomeCard.style.left = "0";
+          mainContent.style.marginLeft = "0";
+        }
+      });
+
+      function toggleStaffButtons() {
+        const staffButtons = document.getElementById("staff-buttons");
+        if (!staffButtons) return;
+        if (staffButtons.style.display === "flex") {
+          staffButtons.style.setProperty("display", "none", "important");
+        } else {
+          staffButtons.style.setProperty("display", "flex", "important");
+          // Hide other button groups
+          hideOtherButtonGroups("staff-buttons");
+        }
+      }
+
+      function toggleClassButtons() {
+        const classButtons = document.getElementById("class-buttons");
+        if (!classButtons) return;
+        if (classButtons.style.display === "flex") {
+          classButtons.style.display = "none";
+        } else {
+          classButtons.style.display = "flex";
+          // Hide other button groups
+          hideOtherButtonGroups("class-buttons");
+        }
+      }
+
+      function toggleAcademicButtons() {
+        const academicButtons = document.getElementById("academic-buttons");
+        if (!academicButtons) return;
+        if (academicButtons.style.display === "flex") {
+          academicButtons.style.display = "none";
+        } else {
+          academicButtons.style.display = "flex";
+          // Hide other button groups
+          hideOtherButtonGroups("academic-buttons");
+        }
+      }
+
+      function toggleNotificationButtons() {
+        const notificationButtons = document.getElementById("notification-buttons");
+        if (!notificationButtons) return;
+        if (notificationButtons.style.display === "flex") {
+          notificationButtons.style.display = "none";
+        } else {
+          notificationButtons.style.display = "flex";
+          // Hide other button groups
+          hideOtherButtonGroups("notification-buttons");
+        }
+      }
+
+      function hideOtherButtonGroups(exceptId) {
+        const buttonGroups = ["staff-buttons", "class-buttons", "academic-buttons", "notification-buttons"];
+        buttonGroups.forEach(groupId => {
+          if (groupId !== exceptId) {
+            const group = document.getElementById(groupId);
+            if (group) {
+              if (groupId === "staff-buttons") {
+                group.style.setProperty("display", "none", "important");
+              } else {
+                group.style.display = "none";
+              }
+            }
+          }
+        });
+      }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>System Settings</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+    />
+    <style>
+      @media (max-width: 768px) {
+        .btn-close {
+          font-size: 0.6em !important;
+        }
+      }
+      .settings-section {
+        margin-bottom: 2rem;
+      }
+      .setting-item {
+        margin-bottom: 1rem;
+        padding: 1rem;
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+      }
+      .setting-label {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+      .setting-description {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-bottom: 0.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12">
+          <div
+            class="d-flex justify-content-center align-items-center mt-3 mb-4"
+          >
+            <h2>System Settings</h2>
+          </div>
+          <div class="container">
+            <div id="flash-message-container" class="mt-3">
+              {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                  {% for message in messages %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                      {{ message }}
+                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                  {% endfor %}
+                {% endif %}
+              {% endwith %}
+            </div>
+
+            <form id="settingsForm" method="POST" action="{{ url_for('admin.system_settings') }}">
+              <!-- School Information -->
+              <div class="settings-section">
+                <h4 class="mb-3"><i class="bi bi-building"></i> School Information</h4>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="setting-item">
+                      <label class="setting-label">School Name</label>
+                      <div class="setting-description">The official name of the school</div>
+                      <input type="text" class="form-control" name="setting_school_name" value="{{ settings_dict.get('school_name').value if settings_dict.get('school_name') else '' }}" />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="setting-item">
+                      <label class="setting-label">School Address</label>
+                      <div class="setting-description">Complete address of the school</div>
+                      <textarea class="form-control" name="setting_school_address" rows="3">{{ settings_dict.get('school_address').value if settings_dict.get('school_address') else '' }}</textarea>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="setting-item">
+                      <label class="setting-label">School Phone</label>
+                      <div class="setting-description">Primary contact phone number</div>
+                      <input type="tel" class="form-control" name="setting_school_phone" value="{{ settings_dict.get('school_phone').value if settings_dict.get('school_phone') else '' }}" />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="setting-item">
+                      <label class="setting-label">School Email</label>
+                      <div class="setting-description">Official email address</div>
+                      <input type="email" class="form-control" name="setting_school_email" value="{{ settings_dict.get('school_email').value if settings_dict.get('school_email') else '' }}" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Security Settings -->
+              <div class="settings-section">
+                <h4 class="mb-3"><i class="bi bi-shield-lock"></i> Security Settings</h4>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="setting-item">
+                      <label class="setting-label">Minimum Password Length</label>
+                      <div class="setting-description">Minimum characters required for passwords</div>
+                      <input type="number" class="form-control" name="setting_min_password_length" value="{{ settings_dict.get('min_password_length').value if settings_dict.get('min_password_length') else '8' }}" min="6" max="20" />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="setting-item">
+                      <label class="setting-label">Session Timeout (minutes)</label>
+                      <div class="setting-description">How long before users are automatically logged out</div>
+                      <input type="number" class="form-control" name="setting_session_timeout" value="{{ settings_dict.get('session_timeout').value if settings_dict.get('session_timeout') else '30' }}" min="5" max="480" />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="setting-item">
+                      <label class="setting-label">Failed Login Attempts</label>
+                      <div class="setting-description">Number of failed attempts before account lockout</div>
+                      <input type="number" class="form-control" name="setting_max_login_attempts" value="{{ settings_dict.get('max_login_attempts').value if settings_dict.get('max_login_attempts') else '5' }}" min="3" max="10" />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="setting-item">
+                      <label class="setting-label">Enable Two-Factor Authentication</label>
+                      <div class="setting-description">Require 2FA for admin accounts</div>
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="setting_enable_2fa" value="true" {% if settings_dict.get('enable_2fa') and settings_dict.get('enable_2fa').value == 'true' %}checked{% endif %} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Communication Settings -->
+              <div class="settings-section">
+                <h4 class="mb-3"><i class="bi bi-envelope"></i> Communication Settings</h4>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="setting-item">
+                      <label class="setting-label">SMTP Server</label>
+                      <div class="setting-description">Email server hostname</div>
+                      <input type="text" class="form-control" name="setting_smtp_server" value="{{ settings_dict.get('smtp_server').value if settings_dict.get('smtp_server') else '' }}" />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="setting-item">
+                      <label class="setting-label">SMTP Port</label>
+                      <div class="setting-description">Email server port (usually 587 or 465)</div>
+                      <input type="number" class="form-control" name="setting_smtp_port" value="{{ settings_dict.get('smtp_port').value if settings_dict.get('smtp_port') else '587' }}" />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="setting-item">
+                      <label class="setting-label">SMTP Username</label>
+                      <div class="setting-description">Email account username</div>
+                      <input type="text" class="form-control" name="setting_smtp_username" value="{{ settings_dict.get('smtp_username').value if settings_dict.get('smtp_username') else '' }}" />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="setting-item">
+                      <label class="setting-label">Enable Email Notifications</label>
+                      <div class="setting-description">Send email notifications to users</div>
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="setting_enable_email_notifications" value="true" {% if settings_dict.get('enable_email_notifications') and settings_dict.get('enable_email_notifications').value == 'true' %}checked{% endif %} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- General Settings -->
+              <div class="settings-section">
+                <h4 class="mb-3"><i class="bi bi-gear"></i> General Settings</h4>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="setting-item">
+                      <label class="setting-label">Time Zone</label>
+                      <div class="setting-description">System time zone</div>
+                      <select class="form-select" name="setting_timezone">
+                        <option value="UTC" {% if settings_dict.get('timezone') and settings_dict.get('timezone').value == 'UTC' %}selected{% endif %}>UTC</option>
+                        <option value="Africa/Nairobi" {% if settings_dict.get('timezone') and settings_dict.get('timezone').value == 'Africa/Nairobi' %}selected{% endif %}>East Africa Time</option>
+                        <option value="America/New_York" {% if settings_dict.get('timezone') and settings_dict.get('timezone').value == 'America/New_York' %}selected{% endif %}>Eastern Time</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="setting-item">
+                      <label class="setting-label">Date Format</label>
+                      <div class="setting-description">How dates are displayed</div>
+                      <select class="form-select" name="setting_date_format">
+                        <option value="DD/MM/YYYY" {% if settings_dict.get('date_format') and settings_dict.get('date_format').value == 'DD/MM/YYYY' %}selected{% endif %}>DD/MM/YYYY</option>
+                        <option value="MM/DD/YYYY" {% if settings_dict.get('date_format') and settings_dict.get('date_format').value == 'MM/DD/YYYY' %}selected{% endif %}>MM/DD/YYYY</option>
+                        <option value="YYYY-MM-DD" {% if settings_dict.get('date_format') and settings_dict.get('date_format').value == 'YYYY-MM-DD' %}selected{% endif %}>YYYY-MM-DD</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="setting-item">
+                      <label class="setting-label">Currency</label>
+                      <div class="setting-description">Default currency for financial operations</div>
+                      <select class="form-select" name="setting_currency">
+                        <option value="KES" {% if settings_dict.get('currency') and settings_dict.get('currency').value == 'KES' %}selected{% endif %}>KENYAN KESHS - KES</option>
+                        <option value="TZS" {% if settings_dict.get('currency') and settings_dict.get('currency').value == 'TZS' %}selected{% endif %}>TANZANIA SHS - TZS</option>
+                        <option value="UGX" {% if settings_dict.get('currency') and settings_dict.get('currency').value == 'UGX' %}selected{% endif %}>UGANDA SHS - UGX</option>
+                        <option value="RWF" {% if settings_dict.get('currency') and settings_dict.get('currency').value == 'RWF' %}selected{% endif %}>RWANDA FRANC - RWF</option>
+                        <option value="BIF" {% if settings_dict.get('currency') and settings_dict.get('currency').value == 'BIF' %}selected{% endif %}>BURUNDI FRANC - BIF</option>
+                        <option value="SSP" {% if settings_dict.get('currency') and settings_dict.get('currency').value == 'SSP' %}selected{% endif %}>SOUTH SUDAN POUND - SSP</option>
+                        <option value="USD" {% if settings_dict.get('currency') and settings_dict.get('currency').value == 'USD' %}selected{% endif %}>US DOLLAR - USD</option>
+                        <option value="EUR" {% if settings_dict.get('currency') and settings_dict.get('currency').value == 'EUR' %}selected{% endif %}>EURO - EUR</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="setting-item">
+                      <label class="setting-label">System Language</label>
+                      <div class="setting-description">Default language for the system</div>
+                      <select class="form-select" name="setting_language">
+                        <option value="en" {% if settings_dict.get('language') and settings_dict.get('language').value == 'en' %}selected{% endif %}>English</option>
+                        <option value="sw" {% if settings_dict.get('language') and settings_dict.get('language').value == 'sw' %}selected{% endif %}>Swahili</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Maintenance Settings -->
+              <div class="settings-section">
+                <h4 class="mb-3"><i class="bi bi-tools"></i> Maintenance Settings</h4>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="setting-item">
+                      <label class="setting-label">Auto Backup Frequency</label>
+                      <div class="setting-description">How often to automatically backup the database</div>
+                      <select class="form-select" name="setting_backup_frequency">
+                        <option value="daily" {% if settings_dict.get('backup_frequency') and settings_dict.get('backup_frequency').value == 'daily' %}selected{% endif %}>Daily</option>
+                        <option value="weekly" {% if settings_dict.get('backup_frequency') and settings_dict.get('backup_frequency').value == 'weekly' %}selected{% endif %}>Weekly</option>
+                        <option value="monthly" {% if settings_dict.get('backup_frequency') and settings_dict.get('backup_frequency').value == 'monthly' %}selected{% endif %}>Monthly</option>
+                        <option value="disabled" {% if settings_dict.get('backup_frequency') and settings_dict.get('backup_frequency').value == 'disabled' %}selected{% endif %}>Disabled</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="setting-item">
+                      <label class="setting-label">Data Retention (months)</label>
+                      <div class="setting-description">How long to keep old records</div>
+                      <input type="number" class="form-control" name="setting_data_retention_months" value="{{ settings_dict.get('data_retention_months').value if settings_dict.get('data_retention_months') else '24' }}" min="1" max="120" />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="setting-item">
+                      <label class="setting-label">Enable System Logs</label>
+                      <div class="setting-description">Keep detailed logs of system activities</div>
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="setting_enable_logging" value="true" {% if settings_dict.get('enable_logging') and settings_dict.get('enable_logging').value == 'true' %}checked{% endif %} />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="setting-item">
+                      <label class="setting-label">Debug Mode</label>
+                      <div class="setting-description">Enable detailed error messages (disable in production)</div>
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="setting_debug_mode" value="true" {% if settings_dict.get('debug_mode') and settings_dict.get('debug_mode').value == 'true' %}checked{% endif %} />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="setting-item">
+                      <label class="setting-label">Enable Maintenance Mode</label>
+                      <div class="setting-description">Enable system maintenance mode (blocks all logins)</div>
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="setting_enable_maintenance_mode" value="true" {% if settings_dict.get('enable_maintenance_mode') and settings_dict.get('enable_maintenance_mode').value == 'true' %}checked{% endif %} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-center mt-4">
+                <button type="submit" class="btn btn-success btn-lg">
+                  <i class="bi bi-save"></i> Save All Settings
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Hide flash message after 3 seconds
+      setTimeout(() => {
+        const flash = document.getElementById("flash-message");
+        if (flash) flash.style.display = "none";
+      }, 3000);
+
+      // Auto-save individual settings on change
+      document.querySelectorAll('input, select, textarea').forEach(element => {
+        element.addEventListener('change', function() {
+          if (this.type === 'checkbox') {
+            const value = this.checked ? 'true' : 'false';
+            const key = this.name.replace('setting_', '');
+            updateSetting(key, value);
+          } else {
+            const key = this.name.replace('setting_', '');
+            updateSetting(key, this.value);
+          }
+        });
+      });
+
+      function updateSetting(key, value) {
+        fetch('/admin/update_system_setting', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest',
+          },
+          body: `key=${encodeURIComponent(key)}&value=${encodeURIComponent(value)}`
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            console.log('Setting updated:', key);
+          }
+        })
+        .catch(error => console.error('Error updating setting:', error));
+      }
+
+      // Handle form submission with loading state and flash messages
+      document.getElementById('settingsForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+
+        // Show loading state
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Saving...';
+
+        // Prepare form data
+        const formData = new FormData(this);
+
+        // Submit form with timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
+        fetch(this.action, {
+          method: 'POST',
+          body: formData,
+          signal: controller.signal
+        })
+        .then(response => {
+          clearTimeout(timeoutId);
+          if (response.ok) {
+            // Success - redirect to the same page to show flash messages
+            window.location.reload();
+          } else {
+            // Handle error response
+            return response.text().then(text => {
+              throw new Error(text || 'An error occurred while saving settings');
+            });
+          }
+        })
+        .catch(error => {
+          clearTimeout(timeoutId);
+          console.error('Error:', error);
+          let errorMessage = 'An error occurred while saving settings';
+          if (error.name === 'AbortError') {
+            errorMessage = 'Request timed out. Please try again.';
+          } else if (error.message) {
+            errorMessage = error.message;
+          }
+          showFlashMessage(errorMessage, 'danger');
+          // Reset button
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalText;
+        });
+      });
+
+      // Function to show flash messages
+      function showFlashMessage(message, type = 'info') {
+        const flashContainer = document.getElementById('flash-message-container') || createFlashContainer();
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+        alertDiv.innerHTML = `
+          ${message}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        flashContainer.appendChild(alertDiv);
+
+        // Auto-dismiss after 2 seconds
+        setTimeout(() => {
+          if (alertDiv && alertDiv.parentNode) {
+            alertDiv.remove();
+          }
+        }, 2000);
+      }
+
+      // Create flash message container if it doesn't exist
+      function createFlashContainer() {
+        const container = document.createElement('div');
+        container.id = 'flash-message-container';
+        container.className = 'container mt-3';
+        const form = document.getElementById('settingsForm');
+        form.parentNode.insertBefore(container, form);
+        return container;
+      }
+
+      // Auto-dismiss flash messages after 2 seconds
+      document.addEventListener('DOMContentLoaded', function() {
+        const alerts = document.querySelectorAll('#flash-message-container .alert');
+        alerts.forEach(alert => {
+          setTimeout(() => {
+            if (alert && alert.parentNode) {
+              alert.remove();
+            }
+          }, 2000);
+        });
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% include 'footer.html' %}
+  </body>
+</html>

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Exam Schedule</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+    />
+    <style>
+      @media (max-width: 768px) {
+        .btn-close {
+          font-size: 0.6em !important;
+        }
+      }
+      .form-container {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+      @media (min-width: 768px) {
+        .form-container {
+          max-width: 800px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12">
+          <div
+            class="d-flex justify-content-center align-items-center mt-3 mb-4"
+          >
+            <h2>Create Exam Schedule</h2>
+          </div>
+          <div class="form-container">
+            {% with messages = get_flashed_messages() %} {% if messages %}
+            <div id="flash-message" class="alert alert-info" role="alert">
+              {% for message in messages %} {{ message }} {% endfor %}
+            </div>
+            {% endif %} {% endwith %}
+            <div class="card" style="background-color: lightblue">
+              <div class="card-body">
+                <form
+                  id="examForm"
+                  method="POST"
+                  action="{{ url_for('admin.create_exam_schedule') }}"
+                >
+                  <div
+                    id="duplicate-warning"
+                    class="alert alert-warning mb-3"
+                    style="display: none"
+                  ></div>
+                  <div class="mb-3">
+                    <label for="name" class="form-label">Exam Name</label>
+                    <div class="input-group">
+                      <span class="input-group-text"
+                        ><i class="bi bi-calendar-event"></i
+                      ></span>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="name"
+                        name="name"
+                        placeholder="e.g., Mid-Term Exam"
+                        oninput="this.value = this.value.toLowerCase().replace(/\b\w/g, l => l.toUpperCase())"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label for="term_id" class="form-label">Term</label>
+                    <div class="input-group">
+                      <span class="input-group-text"
+                        ><i class="bi bi-calendar-week"></i
+                      ></span>
+                      <select
+                        class="form-select"
+                        id="term_id"
+                        name="term_id"
+                        required
+                      >
+                        {% for term in terms %}
+                        <option value="{{ term.id }}">
+                          {{ term.name }} ({{ term.academic_year.name }})
+                        </option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label for="exam_date" class="form-label">Exam Date</label>
+                    <div class="input-group">
+                      <span class="input-group-text"
+                        ><i class="bi bi-calendar-check"></i
+                      ></span>
+                      <input
+                        type="date"
+                        class="form-control"
+                        id="exam_date"
+                        name="exam_date"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="mb-3" id="subject_div">
+                    <label for="subject_id" class="form-label">Subject</label>
+                    <div class="input-group">
+                      <span class="input-group-text"
+                        ><i class="bi bi-book"></i
+                      ></span>
+                      <select
+                        class="form-select"
+                        id="subject_id"
+                        name="subject_id"
+                        required
+                      >
+                        {% for subject in subjects %}
+                        <option value="{{ subject.id }}">
+                          {{ subject.name }}
+                        </option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        id="all_classes_subjects"
+                        name="all_classes_subjects"
+                      />
+                      <label
+                        class="form-check-label"
+                        for="all_classes_subjects"
+                      >
+                        Create for all classes and all subjects
+                      </label>
+                    </div>
+                  </div>
+                  <div class="mb-3" id="class_div">
+                    <label for="class_id" class="form-label">Class</label>
+                    <div class="input-group">
+                      <span class="input-group-text"
+                        ><i class="bi bi-house"></i
+                      ></span>
+                      <select
+                        class="form-select"
+                        id="class_id"
+                        name="class_id"
+                        required
+                      >
+                        {% for cls in classes %}
+                        <option value="{{ cls.id }}">{{ cls.name }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-center">
+                    <button
+                      id="submitBtn"
+                      type="submit"
+                      class="btn btn-success"
+                    >
+                      Create Exam Schedule
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      // Hide flash message after 2 seconds
+      setTimeout(() => {
+        const flash = document.getElementById("flash-message");
+        if (flash) flash.style.display = "none";
+      }, 2000);
+
+      // Toggle class and subject selection
+      document
+        .getElementById("all_classes_subjects")
+        .addEventListener("change", function () {
+          const subjectDiv = document.getElementById("subject_div");
+          const classDiv = document.getElementById("class_div");
+          const subjectSelect = document.getElementById("subject_id");
+          const classSelect = document.getElementById("class_id");
+          if (this.checked) {
+            subjectDiv.style.display = "none";
+            classDiv.style.display = "none";
+            subjectSelect.required = false;
+            classSelect.required = false;
+          } else {
+            subjectDiv.style.display = "block";
+            classDiv.style.display = "block";
+            subjectSelect.required = true;
+            classSelect.required = true;
+          }
+        });
+
+      // Check for duplicates
+      function checkDuplicate() {
+        const name = document.getElementById("name").value.trim();
+        const termId = document.getElementById("term_id").value;
+        const allBulk = document.getElementById("all_classes_subjects").checked;
+        let body = `name=${encodeURIComponent(
+          name
+        )}&term_id=${encodeURIComponent(termId)}&all_bulk=${allBulk}`;
+        if (!allBulk) {
+          const subjectId = document.getElementById("subject_id").value;
+          const classId = document.getElementById("class_id").value;
+          if (subjectId && classId) {
+            body += `&subject_id=${encodeURIComponent(
+              subjectId
+            )}&class_id=${encodeURIComponent(classId)}`;
+          } else {
+            document.getElementById("duplicate-warning").style.display = "none";
+            return;
+          }
+        }
+        if (name && termId) {
+          fetch("/admin/check_exam_duplicate", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: body,
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              const warning = document.getElementById("duplicate-warning");
+              if (data.exists) {
+                warning.textContent = allBulk
+                  ? "Some exam schedules with this name already exist for the selected term."
+                  : "An exam schedule with this name already exists for the selected term, subject, and class.";
+                warning.style.display = "block";
+              } else {
+                warning.style.display = "none";
+              }
+            });
+        } else {
+          document.getElementById("duplicate-warning").style.display = "none";
+        }
+      }
+
+      document.getElementById("name").addEventListener("input", checkDuplicate);
+      document
+        .getElementById("term_id")
+        .addEventListener("change", checkDuplicate);
+      document
+        .getElementById("subject_id")
+        .addEventListener("change", checkDuplicate);
+      document
+        .getElementById("class_id")
+        .addEventListener("change", checkDuplicate);
+      document
+        .getElementById("all_classes_subjects")
+        .addEventListener("change", checkDuplicate);
+
+      // AJAX form submission
+      document
+        .getElementById("examForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          const btn = document.getElementById("submitBtn");
+          btn.textContent = "Saving...";
+          btn.disabled = true;
+
+          const formData = new FormData(this);
+          fetch(this.action, {
+            method: "POST",
+            body: formData,
+            headers: {
+              "X-Requested-With": "XMLHttpRequest",
+            },
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              // Clear existing flash
+              const existingFlash = document.getElementById("flash-message");
+              if (existingFlash) existingFlash.remove();
+
+              // Clear red borders
+              document
+                .querySelectorAll("input, select")
+                .forEach((el) => (el.style.borderColor = ""));
+
+              const msgDiv = document.createElement("div");
+              msgDiv.id = "flash-message";
+              msgDiv.className = data.success
+                ? "alert alert-success"
+                : "alert alert-danger";
+              msgDiv.textContent = data.message;
+              document
+                .querySelector(".card-body")
+                .insertBefore(
+                  msgDiv,
+                  document.querySelector(".card-body").firstChild
+                );
+
+              if (data.success) {
+                btn.textContent = "Saved";
+                this.reset();
+                setTimeout(() => {
+                  msgDiv.remove();
+                  btn.textContent = "Create Exam Schedule";
+                  btn.disabled = false;
+                }, 2000);
+              } else {
+                btn.textContent = "Create Exam Schedule";
+                btn.disabled = false;
+                if (data.duplicates) {
+                  data.duplicates.forEach((field) => {
+                    const input = document.getElementById(field);
+                    if (input) input.style.borderColor = "red";
+                  });
+                }
+              }
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+              btn.textContent = "Create Exam Schedule";
+              btn.disabled = false;
+            });
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
