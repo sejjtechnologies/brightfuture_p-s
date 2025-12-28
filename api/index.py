@@ -1,4 +1,4 @@
-from vercel_wsgi import make_handler
+from vercel import wsgi
 from app import app
 
-handler = make_handler(app)
+wsgi.app = app
