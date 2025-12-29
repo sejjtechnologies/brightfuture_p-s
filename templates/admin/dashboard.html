@@ -33,7 +33,7 @@
         background: #f0f0f0 !important;
       }
       .sidebar-section {
-        margin-bottom: 10px;
+        margin-bottom: 20px;
       }
       .sidebar-item {
         cursor: pointer;
@@ -41,10 +41,11 @@
         font-weight: bold;
         color: #ffff00;
         text-transform: uppercase;
-        font-size: 0.75em;
+        font-size: 0.7em;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.3);
       }
       .sidebar-item i {
-        color: #ff0000;
+        color: #333;
       }
       .sidebar-item:hover {
         background: rgba(255, 255, 255, 0.2);
@@ -53,18 +54,31 @@
         cursor: pointer;
         padding: 3px 20px;
         color: white;
-        font-size: 0.8em;
+        font-size: 0.75em;
       }
       .sidebar-subitem:hover {
         background: rgba(255, 255, 255, 0.2);
       }
+      .vertical-icon {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 4px;
+      }
+      .sidebar-item.vertical-icon i {
+        font-size: 1.5em;
+      }
+      .sidebar-subitem.vertical-icon i {
+        font-size: 1.2em;
+      }
       @media (max-width: 767px) {
         .sidebar-item {
-          font-size: 0.65em;
+          font-size: 0.6em;
           padding: 3px 8px;
         }
         .sidebar-subitem {
-          font-size: 0.7em;
+          font-size: 0.65em;
           padding: 2px 15px;
         }
       }
@@ -81,15 +95,16 @@
       <div class="row">
         <div
           id="sidebar"
-          class="col-12 col-md-2 bg-primary"
+          class="bg-primary"
           style="
-            height: calc(100vh - 60px);
+            height: 100vh;
             background-color: #00008b !important;
             position: fixed;
             padding-top: 2px;
             z-index: 1000;
             overflow-y: auto;
-            width: 15%;
+            overflow-x: hidden;
+            width: 220px !important;
           "
         >
           <button
@@ -97,195 +112,192 @@
             style="position: absolute; top: 15px; right: 10px; font-size: 0.8em"
             onclick="hideSidebar()"
           ></button>
-          <div class="d-flex flex-column h-100">
+          <div class="d-flex flex14column h-100">
             <div style="padding-top: 60px; padding-bottom: 60px">
               <div
                 class="d-flex flex-column align-items-start"
                 style="gap: 0.5rem; padding-left: 10px"
               >
-                <div class="sidebar-item" onclick="showDashboard()">
-                  <i class="bi bi-house me-2" style="color: black"></i>
-                  Dashboard
+                <div
+                  class="sidebar-item vertical-icon"
+                  onclick="showDashboard()"
+                >
+                  <i class="bi bi-house" style="color: white; font-size: 2em;"></i>
+                  <span>Dashboard</span>
                 </div>
                 <div class="sidebar-section">
-                  <div class="sidebar-item">
-                    <i class="bi bi-people me-2" style="color: black"></i> Staff
-                    & Role Management
+                  <div class="sidebar-item vertical-icon">
+                    <i class="bi bi-person-badge" style="color: white"></i>
+                    <span>Staff & Role Management</span>
                   </div>
                   <div
-                    class="sidebar-subitem"
+                    class="sidebar-subitem vertical-icon"
                     onclick="loadContent('{{ url_for('admin.create_staff') }}')"
                   >
-                    <i class="bi bi-person-plus me-2" style="color: black"></i>
-                    Create Staff
+                    <i class="bi bi-person-plus" style="color: black"></i>
+                    <span>Create Staff</span>
                   </div>
                   <div
-                    class="sidebar-subitem"
+                    class="sidebar-subitem vertical-icon"
                     onclick="loadContent('{{ url_for('admin.manage_users') }}')"
                   >
-                    <i class="bi bi-people me-2" style="color: black"></i>
-                    Manage Users
+                    <i class="bi bi-people" style="color: black"></i>
+                    <span>Manage Users</span>
                   </div>
                 </div>
                 <div class="sidebar-section">
-                  <div class="sidebar-item">
-                    <i class="bi bi-book me-2" style="color: black"></i> Class,
-                    Subjects & Streams Setup/ Teacher Assignment
+                  <div class="sidebar-item vertical-icon">
+                    <i class="bi bi-journal" style="color: white"></i>
+                    <span>Academic Setup & Assignments</span>
                   </div>
                   <div
-                    class="sidebar-subitem"
+                    class="sidebar-subitem vertical-icon"
                     onclick="loadContent('{{ url_for('admin.create_class') }}')"
                   >
-                    <i class="bi bi-plus-circle me-2" style="color: black"></i>
-                    Create Class
+                    <i class="bi bi-plus-circle" style="color: black"></i>
+                    <span>Create Class</span>
                   </div>
                   <div
-                    class="sidebar-subitem"
+                    class="sidebar-subitem vertical-icon"
                     onclick="loadContent('{{ url_for('admin.manage_classes') }}')"
                   >
-                    <i class="bi bi-list me-2" style="color: black"></i> Manage
-                    Classes
+                    <i class="bi bi-list" style="color: black"></i>
+                    <span>Manage Classes</span>
                   </div>
                   <div
-                    class="sidebar-subitem"
+                    class="sidebar-subitem vertical-icon"
                     onclick="loadContent('{{ url_for('admin.create_subject') }}')"
                   >
-                    <i class="bi bi-plus-circle me-2" style="color: black"></i>
-                    Create Subject
+                    <i class="bi bi-plus-circle" style="color: black"></i>
+                    <span>Create Subject</span>
                   </div>
                   <div
-                    class="sidebar-subitem"
+                    class="sidebar-subitem vertical-icon"
                     onclick="loadContent('{{ url_for('admin.manage_subjects') }}')"
                   >
-                    <i class="bi bi-list me-2" style="color: black"></i> Manage
-                    Subjects
+                    <i class="bi bi-list" style="color: black"></i>
+                    <span>Manage Subjects</span>
                   </div>
                   <div
-                    class="sidebar-subitem"
+                    class="sidebar-subitem vertical-icon"
                     onclick="loadContent('{{ url_for('admin.create_stream') }}')"
                   >
-                    <i class="bi bi-plus-circle me-2" style="color: black"></i>
-                    Create Stream
+                    <i class="bi bi-plus-circle" style="color: black"></i>
+                    <span>Create Stream</span>
                   </div>
                   <div
-                    class="sidebar-subitem"
+                    class="sidebar-subitem vertical-icon"
                     onclick="loadContent('{{ url_for('admin.manage_streams') }}')"
                   >
-                    <i class="bi bi-list me-2" style="color: black"></i> Manage
-                    Streams
+                    <i class="bi bi-list" style="color: black"></i>
+                    <span>Manage Streams</span>
                   </div>
                   <div
-                    class="sidebar-subitem"
+                    class="sidebar-subitem vertical-icon"
                     onclick="loadContent('{{ url_for('admin.assign_teachers') }}')"
                   >
-                    <i class="bi bi-person-check me-2" style="color: black"></i>
-                    Assign Teachers
+                    <i class="bi bi-person-check" style="color: black"></i>
+                    <span>Assign Teachers</span>
                   </div>
                   <div
-                    class="sidebar-subitem"
+                    class="sidebar-subitem vertical-icon"
                     onclick="loadContent('{{ url_for('admin.manage_assignments') }}')"
                   >
-                    <i class="bi bi-gear me-2" style="color: black"></i> Manage
-                    Assignments
+                    <i class="bi bi-gear" style="color: black"></i>
+                    <span>Manage Assignments</span>
                   </div>
                 </div>
                 <div class="sidebar-section">
-                  <div class="sidebar-item">
-                    <i
-                      class="bi bi-calendar-event me-2"
-                      style="color: black"
-                    ></i>
-                    Academic Management
+                  <div class="sidebar-item vertical-icon">
+                    <i class="bi bi-calendar-week" style="color: white"></i>
+                    <span>Academic Management</span>
                   </div>
                   <div
-                    class="sidebar-subitem"
+                    class="sidebar-subitem vertical-icon"
                     onclick="loadContent('{{ url_for('admin.create_academic_year') }}')"
                   >
-                    <i class="bi bi-plus-circle me-2" style="color: black"></i>
-                    Create Academic Year
+                    <i class="bi bi-plus-circle" style="color: black"></i>
+                    <span>Create Academic Year</span>
                   </div>
                   <div
-                    class="sidebar-subitem"
+                    class="sidebar-subitem vertical-icon"
                     onclick="loadContent('{{ url_for('admin.manage_academic_years') }}')"
                   >
-                    <i class="bi bi-list me-2" style="color: black"></i> Manage
-                    Academic Years
+                    <i class="bi bi-list" style="color: black"></i>
+                    <span>Manage Academic Years</span>
                   </div>
                   <div
-                    class="sidebar-subitem"
+                    class="sidebar-subitem vertical-icon"
                     onclick="loadContent('{{ url_for('admin.create_term') }}')"
                   >
-                    <i class="bi bi-plus-circle me-2" style="color: black"></i>
-                    Create Term
+                    <i class="bi bi-plus-circle" style="color: black"></i>
+                    <span>Create Term</span>
                   </div>
                   <div
-                    class="sidebar-subitem"
+                    class="sidebar-subitem vertical-icon"
                     onclick="loadContent('{{ url_for('admin.manage_terms') }}')"
                   >
-                    <i class="bi bi-list me-2" style="color: black"></i> Manage
-                    Terms
+                    <i class="bi bi-list" style="color: black"></i>
+                    <span>Manage Terms</span>
                   </div>
                   <div
-                    class="sidebar-subitem"
+                    class="sidebar-subitem vertical-icon"
                     onclick="loadContent('{{ url_for('admin.set_current_term_year') }}')"
                   >
-                    <i class="bi bi-gear me-2" style="color: black"></i> Set
-                    Current Term Year
+                    <i class="bi bi-gear" style="color: black"></i>
+                    <span>Set Current Term Year</span>
                   </div>
                 </div>
                 <div class="sidebar-section">
-                  <div class="sidebar-item">
-                    <i
-                      class="bi bi-clipboard-check me-2"
-                      style="color: black"
-                    ></i>
-                    Exam Management
+                  <div class="sidebar-item vertical-icon">
+                    <i class="bi bi-clipboard-data" style="color: white"></i>
+                    <span>Exam Management</span>
                   </div>
                   <div
-                    class="sidebar-subitem"
+                    class="sidebar-subitem vertical-icon"
                     onclick="loadContent('{{ url_for('admin.create_exam_schedule') }}')"
                   >
-                    <i class="bi bi-plus-circle me-2" style="color: black"></i>
-                    Create Exam Schedule
+                    <i class="bi bi-plus-circle" style="color: black"></i>
+                    <span>Create Exam Schedule</span>
                   </div>
                   <div
-                    class="sidebar-subitem"
+                    class="sidebar-subitem vertical-icon"
                     onclick="loadContent('{{ url_for('admin.manage_exam_schedules') }}')"
                   >
-                    <i class="bi bi-list me-2" style="color: black"></i> Manage
-                    Exam Schedules
+                    <i class="bi bi-list" style="color: black"></i>
+                    <span>Manage Exam Schedules</span>
                   </div>
                 </div>
                 <div class="sidebar-section">
-                  <div class="sidebar-item">
-                    <i class="bi bi-bell me-2" style="color: black"></i>
-                    Notifications
+                  <div class="sidebar-item vertical-icon">
+                    <i class="bi bi-bell-fill" style="color: white"></i>
+                    <span>Notifications</span>
                   </div>
                   <div
-                    class="sidebar-subitem"
+                    class="sidebar-subitem vertical-icon"
                     onclick="loadContent('{{ url_for('admin.create_notification') }}')"
                   >
-                    <i class="bi bi-plus-circle me-2" style="color: black"></i>
-                    Create Notification
+                    <i class="bi bi-plus-circle" style="color: black"></i>
+                    <span>Create Notification</span>
                   </div>
                   <div
-                    class="sidebar-subitem"
+                    class="sidebar-subitem vertical-icon"
                     onclick="loadContent('{{ url_for('admin.manage_notifications') }}')"
                   >
-                    <i class="bi bi-list me-2" style="color: black"></i> Manage
-                    Notifications
+                    <i class="bi bi-list" style="color: black"></i>
+                    <span>Manage Notifications</span>
                   </div>
                 </div>
                 <div
-                  class="sidebar-item"
+                  class="sidebar-item vertical-icon"
                   onclick="loadContent('{{ url_for('admin.system_settings') }}')"
                 >
-                  <i class="bi bi-gear me-2" style="color: black"></i> System
-                  Settings
+                  <i class="bi bi-gear-fill" style="color: black"></i>
+                  <span>System settings</span>
                 </div>
-                <div class="sidebar-item">
-                  <i class="bi bi-bar-chart me-2" style="color: black"></i>
-                  School-Wide Reporting
+                <div class="sidebar-item vertical-icon">
+                  <i class="bi bi-bar-chart-fill" style="color: black"></i>
+                  <span>School-Wide Reporting</span>
                 </div>
               </div>
             </div>
@@ -297,7 +309,7 @@
             position: relative;
             min-height: 100vh;
             padding-bottom: 80px;
-            margin-left: 15%;
+            margin-left: 16.666667%;
             padding-top: 100px;
           "
         >
@@ -393,6 +405,7 @@
               id="main-content"
               style="
                 margin-top: 10px;
+                margin-left: 220px;
                 max-height: calc(100vh - 120px);
                 overflow-y: auto;
                 padding: 0 10px;
@@ -547,6 +560,11 @@
             if (toggleBtn) {
               toggleBtn.addEventListener("click", window.togglePassword);
             }
+            // Hide flash message after 2 seconds
+            setTimeout(() => {
+              const flash = document.getElementById("flash-message");
+              if (flash) flash.style.display = "none";
+            }, 2000);
             if (loading) loading.style.display = "none";
           })
           .catch((error) => {
@@ -651,6 +669,11 @@
         modal.show();
       };
 
+      window.setDeleteAction = function (id) {
+        console.log("setDeleteAction called with id:", id);
+        window.currentDeleteId = id;
+      };
+
       window.confirmDelete = function () {
         // Check if this is a notification delete (has deleteModal)
         const modalElement = document.getElementById("deleteModal");
@@ -684,11 +707,8 @@
                 );
 
               if (data.success) {
-                // Remove the row
-                document.getElementById(`row-${id}`).remove();
-                setTimeout(() => {
-                  msgDiv.remove();
-                }, 2000);
+                // Reload the page to apply updates immediately
+                window.location.reload();
               }
             })
             .catch((error) => {
@@ -704,132 +724,150 @@
 
       // Management page delete functions
       window.confirmDeleteClass = function () {
-        console.log(
-          "confirmDeleteClass called, currentDeleteId:",
-          window.currentDeleteId
-        );
         if (window.currentDeleteId) {
-          console.log("Creating form for deletion");
-          const form = document.createElement("form");
-          form.method = "POST";
-          form.action = `/admin/delete_class/${window.currentDeleteId}`;
-          console.log("Form action:", form.action);
-          document.body.appendChild(form);
-
-          // Close the modal before submitting
+          // Close the modal
           const modal = bootstrap.Modal.getInstance(
             document.getElementById("deleteClassModal")
           );
-          if (modal) {
-            modal.hide();
-          }
+          if (modal) modal.hide();
 
-          console.log("Submitting form");
-          form.submit();
-        } else {
-          console.log("No currentDeleteId found");
+          fetch(`/admin/delete_class/${window.currentDeleteId}`, {
+            method: "POST",
+          })
+            .then((response) => {
+              window.location.reload();
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
         }
       };
 
       window.confirmDeleteStream = function () {
         if (window.currentDeleteId) {
-          const form = document.createElement("form");
-          form.method = "POST";
-          form.action = `/admin/delete_stream/${window.currentDeleteId}`;
-          document.body.appendChild(form);
-
           // Close the modal
           const modal = bootstrap.Modal.getInstance(
             document.getElementById("deleteStreamModal")
           );
           if (modal) modal.hide();
 
-          form.submit();
+          fetch(`/admin/delete_stream/${window.currentDeleteId}`, {
+            method: "POST",
+          })
+            .then((response) => {
+              window.location.reload();
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
         }
       };
 
       window.confirmDeleteSubject = function () {
         if (window.currentDeleteId) {
-          const form = document.createElement("form");
-          form.method = "POST";
-          form.action = `/admin/delete_subject/${window.currentDeleteId}`;
-          document.body.appendChild(form);
-
           // Close the modal
           const modal = bootstrap.Modal.getInstance(
             document.getElementById("deleteModal")
           );
           if (modal) modal.hide();
 
-          form.submit();
+          fetch(`/admin/delete_subject/${window.currentDeleteId}`, {
+            method: "POST",
+          })
+            .then((response) => {
+              window.location.reload();
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
         }
       };
 
       window.confirmDeleteTerm = function () {
         if (window.currentDeleteId) {
-          const form = document.createElement("form");
-          form.method = "POST";
-          form.action = `/admin/delete_term/${window.currentDeleteId}`;
-          document.body.appendChild(form);
-
           // Close the modal
           const modal = bootstrap.Modal.getInstance(
             document.getElementById("deleteModal")
           );
           if (modal) modal.hide();
 
-          form.submit();
+          fetch(`/admin/delete_term/${window.currentDeleteId}`, {
+            method: "POST",
+          })
+            .then((response) => {
+              window.location.reload();
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
         }
       };
 
       window.confirmDeleteAcademicYear = function () {
         if (window.currentDeleteId) {
-          const form = document.createElement("form");
-          form.method = "POST";
-          form.action = `/admin/delete_academic_year/${window.currentDeleteId}`;
-          document.body.appendChild(form);
-
           // Close the modal
           const modal = bootstrap.Modal.getInstance(
             document.getElementById("deleteModal")
           );
           if (modal) modal.hide();
 
-          form.submit();
+          fetch(`/admin/delete_academic_year/${window.currentDeleteId}`, {
+            method: "POST",
+          })
+            .then((response) => {
+              window.location.reload();
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
         }
       };
 
       window.confirmDeleteAssignment = function () {
         if (window.currentDeleteId) {
-          const form = document.createElement("form");
-          form.method = "POST";
-          form.action = `/admin/delete_assignment/${window.currentDeleteId}`;
-          document.body.appendChild(form);
-
           // Close the modal
           const modal = bootstrap.Modal.getInstance(
             document.getElementById("deleteModal")
           );
           if (modal) modal.hide();
 
-          form.submit();
+          fetch(`/admin/delete_assignment/${window.currentDeleteId}`, {
+            method: "POST",
+          })
+            .then((response) => {
+              window.location.reload();
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
         }
       };
 
       window.confirmDeleteUser = function () {
+        console.log(
+          "confirmDeleteUser called, currentDeleteId:",
+          window.currentDeleteId
+        );
         if (window.currentDeleteId) {
-          const form = document.createElement("form");
-          form.method = "POST";
-          form.action = `/admin/delete_user/${window.currentDeleteId}`;
-          document.body.appendChild(form);
-
           // Close the modal
-          const modal = bootstrap.Modal.getInstance(
-            document.getElementById("deleteUserModal")
-          );
+          const modalElement = document.getElementById("deleteUserModal");
+          console.log("modalElement:", modalElement);
+          const modal = modalElement
+            ? bootstrap.Modal.getInstance(modalElement)
+            : null;
+          console.log("modal instance:", modal);
           if (modal) modal.hide();
 
-          form.submit();
+          fetch(`/admin/delete_user/${window.currentDeleteId}`, {
+            method: "POST",
+          })
+            .then((response) => {
+              console.log("Fetch response:", response);
+              window.location.reload();
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
         }
       };
 
@@ -966,6 +1004,7 @@
         // This function will be overridden by local functions in each template
         // but provides a fallback
         console.log("setDeleteAction called with id:", id);
+        window.currentDeleteId = id;
       };
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

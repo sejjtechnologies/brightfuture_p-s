@@ -14,8 +14,34 @@
           <div class="form-container" style="max-width: 1400px; margin: 0 auto;">
             <div class="card">
               <div class="card-body">
+                <style>
+                  .compact-table {
+                    font-size: 0.8rem;
+                    line-height: 1.2;
+                  }
+                  .compact-table th, .compact-table td {
+                    padding: 0.25rem 0.5rem;
+                  }
+                  .compact-table .form-control, .compact-table .form-select {
+                    font-size: 0.75rem;
+                    padding: 0.125rem 0.25rem;
+                    height: auto;
+                  }
+                  .compact-table .btn-sm {
+                    font-size: 0.7rem;
+                    padding: 0.125rem 0.25rem;
+                  }
+                  @media (max-width: 768px) {
+                    .compact-table {
+                      font-size: 0.7rem;
+                    }
+                    .compact-table th, .compact-table td {
+                      padding: 0.125rem 0.25rem;
+                    }
+                  }
+                </style>
                 <div class="table-responsive">
-                  <table class="table table-striped table-hover table-sm">
+                  <table class="table table-hover table-borderless table-sm compact-table">
                     <thead class="table-dark">
                       <tr>
                         <th>#</th>
@@ -32,11 +58,11 @@
                       {% for user in users %}
                       <tr data-user-id="{{ user.id }}">
                         <td>{{ user.display_id }}</td>
-                        <td><input type="text" class="form-control editable" value="{{ user.username }}" readonly></td>
-                        <td><input type="email" class="form-control editable" value="{{ user.email }}" readonly></td>
-                        <td><input type="password" class="form-control editable" placeholder="Leave blank to keep current" readonly></td>
+                        <td><input type="text" class="form-control form-control-sm editable" value="{{ user.username }}" readonly></td>
+                        <td><input type="email" class="form-control form-control-sm editable" value="{{ user.email }}" readonly></td>
+                        <td><input type="password" class="form-control form-control-sm editable" placeholder="Leave blank to keep current" readonly></td>
                         <td>
-                          <select class="form-select editable" disabled>
+                          <select class="form-select form-select-sm editable" disabled>
                             {% for role in roles %}
                             <option value="{{ role.id }}" {% if role.id == user.role_id %}selected{% endif %} {% if role.name == 'Admin' %}disabled{% endif %}>{{ role.name }}</option>
                             {% endfor %}
@@ -70,6 +96,24 @@
 
       function setDeleteAction(userId) {
         window.currentDeleteId = userId;
+      }
+      function confirmDeleteUser() {
+        if (window.currentDeleteId) {
+          const modalElement = document.getElementById("deleteUserModal");
+          if (modalElement) {
+            const modal = bootstrap.Modal.getInstance(modalElement);
+            if (modal) {
+              modal.hide();
+            }
+          }
+          fetch(`/admin/delete_user/${window.currentDeleteId}`, {
+            method: 'POST',
+          }).then(response => {
+            loadContent('{{ url_for('admin.manage_users') }}');
+          }).catch(error => {
+            console.error('Error:', error);
+          });
+        }
       }
     </script>
     <div class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalLabel" aria-hidden="true">

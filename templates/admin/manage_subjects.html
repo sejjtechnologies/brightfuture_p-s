@@ -116,6 +116,24 @@
   function setDeleteAction(subjectId) {
     window.currentDeleteId = subjectId;
   }
+  function confirmDeleteSubject() {
+    if (window.currentDeleteId) {
+      const modalElement = document.getElementById("deleteModal");
+      if (modalElement) {
+        const modal = bootstrap.Modal.getInstance(modalElement);
+        if (modal) {
+          modal.hide();
+        }
+      }
+      fetch(`/admin/delete_subject/${window.currentDeleteId}`, {
+        method: 'POST',
+      }).then(response => {
+        loadContent('{{ url_for('admin.manage_subjects') }}');
+      }).catch(error => {
+        console.error('Error:', error);
+      });
+    }
+  }
 </script>
 <div
   class="modal fade"

@@ -177,6 +177,29 @@
     </div>
 
     <script>
+      function deleteRow(id) {
+        window.currentDeleteId = id;
+        const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        modal.show();
+      }
+      function confirmDelete() {
+        if (window.currentDeleteId) {
+          const modalElement = document.getElementById("deleteModal");
+          if (modalElement) {
+            const modal = bootstrap.Modal.getInstance(modalElement);
+            if (modal) {
+              modal.hide();
+            }
+          }
+          fetch(`/admin/delete_notification/${window.currentDeleteId}`, {
+            method: 'POST',
+          }).then(response => {
+            loadContent('{{ url_for('admin.manage_notifications') }}');
+          }).catch(error => {
+            console.error('Error:', error);
+          });
+        }
+      }
       // Hide flash message after 2 seconds
       setTimeout(() => {
         const flash = document.getElementById("flash-message");
