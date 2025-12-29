@@ -678,45 +678,52 @@
               msgDiv.textContent = data.message;
               document
                 .querySelector(".card-body")
-              .insertBefore(
-                msgDiv,
-                document.querySelector(".card-body").firstChild
-              );
+                .insertBefore(
+                  msgDiv,
+                  document.querySelector(".card-body").firstChild
+                );
 
-            if (data.success) {
-              // Remove the row
-              document.getElementById(`row-${id}`).remove();
-              setTimeout(() => {
-                msgDiv.remove();
-              }, 2000);
-            }
-          })
-          .catch((error) => {
-            console.error("Error:", error);
-          });
+              if (data.success) {
+                // Remove the row
+                document.getElementById(`row-${id}`).remove();
+                setTimeout(() => {
+                  msgDiv.remove();
+                }, 2000);
+              }
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
         } else {
           // This is not a notification delete, management pages handle their own deletion
-          console.log("confirmDelete called but no deleteModal found - assuming management page handles deletion");
+          console.log(
+            "confirmDelete called but no deleteModal found - assuming management page handles deletion"
+          );
         }
       };
 
       // Management page delete functions
-      window.confirmDeleteClass = function() {
-        console.log("confirmDeleteClass called, currentDeleteId:", window.currentDeleteId);
+      window.confirmDeleteClass = function () {
+        console.log(
+          "confirmDeleteClass called, currentDeleteId:",
+          window.currentDeleteId
+        );
         if (window.currentDeleteId) {
           console.log("Creating form for deletion");
-          const form = document.createElement('form');
-          form.method = 'POST';
+          const form = document.createElement("form");
+          form.method = "POST";
           form.action = `/admin/delete_class/${window.currentDeleteId}`;
           console.log("Form action:", form.action);
           document.body.appendChild(form);
-          
+
           // Close the modal before submitting
-          const modal = bootstrap.Modal.getInstance(document.getElementById('deleteClassModal'));
+          const modal = bootstrap.Modal.getInstance(
+            document.getElementById("deleteClassModal")
+          );
           if (modal) {
             modal.hide();
           }
-          
+
           console.log("Submitting form");
           form.submit();
         } else {
@@ -724,82 +731,104 @@
         }
       };
 
-      window.confirmDeleteStream = function() {
+      window.confirmDeleteStream = function () {
         if (window.currentDeleteId) {
-          const form = document.createElement('form');
-          form.method = 'POST';
+          const form = document.createElement("form");
+          form.method = "POST";
           form.action = `/admin/delete_stream/${window.currentDeleteId}`;
           document.body.appendChild(form);
-          
+
           // Close the modal
-          const modal = bootstrap.Modal.getInstance(document.getElementById('deleteStreamModal'));
+          const modal = bootstrap.Modal.getInstance(
+            document.getElementById("deleteStreamModal")
+          );
           if (modal) modal.hide();
-          
+
           form.submit();
         }
       };
 
-      window.confirmDeleteSubject = function() {
+      window.confirmDeleteSubject = function () {
         if (window.currentDeleteId) {
-          const form = document.createElement('form');
-          form.method = 'POST';
+          const form = document.createElement("form");
+          form.method = "POST";
           form.action = `/admin/delete_subject/${window.currentDeleteId}`;
           document.body.appendChild(form);
-          
+
           // Close the modal
-          const modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
+          const modal = bootstrap.Modal.getInstance(
+            document.getElementById("deleteModal")
+          );
           if (modal) modal.hide();
-          
+
           form.submit();
         }
       };
 
-      window.confirmDeleteTerm = function() {
+      window.confirmDeleteTerm = function () {
         if (window.currentDeleteId) {
-          const form = document.createElement('form');
-          form.method = 'POST';
+          const form = document.createElement("form");
+          form.method = "POST";
           form.action = `/admin/delete_term/${window.currentDeleteId}`;
           document.body.appendChild(form);
-          
+
           // Close the modal
-          const modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
+          const modal = bootstrap.Modal.getInstance(
+            document.getElementById("deleteModal")
+          );
           if (modal) modal.hide();
-          
+
           form.submit();
         }
       };
 
-      window.confirmDeleteAcademicYear = function() {
+      window.confirmDeleteAcademicYear = function () {
         if (window.currentDeleteId) {
-          const form = document.createElement('form');
-          form.method = 'POST';
+          const form = document.createElement("form");
+          form.method = "POST";
           form.action = `/admin/delete_academic_year/${window.currentDeleteId}`;
           document.body.appendChild(form);
-          
+
           // Close the modal
-          const modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
+          const modal = bootstrap.Modal.getInstance(
+            document.getElementById("deleteModal")
+          );
           if (modal) modal.hide();
-          
+
           form.submit();
         }
       };
 
-      window.confirmDeleteAssignment = function() {
+      window.confirmDeleteAssignment = function () {
         if (window.currentDeleteId) {
-          const form = document.createElement('form');
-          form.method = 'POST';
+          const form = document.createElement("form");
+          form.method = "POST";
           form.action = `/admin/delete_assignment/${window.currentDeleteId}`;
           document.body.appendChild(form);
+
+          // Close the modal
+          const modal = bootstrap.Modal.getInstance(
+            document.getElementById("deleteModal")
+          );
+          if (modal) modal.hide();
+
           form.submit();
         }
       };
 
-      window.confirmDeleteUser = function() {
+      window.confirmDeleteUser = function () {
         if (window.currentDeleteId) {
-          const form = document.createElement('form');
-          form.method = 'POST';
+          const form = document.createElement("form");
+          form.method = "POST";
           form.action = `/admin/delete_user/${window.currentDeleteId}`;
           document.body.appendChild(form);
+
+          // Close the modal
+          const modal = bootstrap.Modal.getInstance(
+            document.getElementById("deleteUserModal")
+          );
+          if (modal) modal.hide();
+
           form.submit();
         }
       };

@@ -1,193 +1,220 @@
 <div class="container-fluid">
-      <div class="row">
-        <div class="col-12">
-          <div
-            class="d-flex justify-content-center align-items-center mt-3 mb-4"
-          >
+  <div class="row">
+    <div class="col-12">
+      <div class="d-flex justify-content-center align-items-center mt-3 mb-4">
         <h2>Manage Classes</h2>
-          </div>
-          <div class="form-container" style="max-width: 1400px; margin: 0 auto;">
-            {% with messages = get_flashed_messages() %} {% if messages %}
-            <div id="flash-message" class="alert alert-info" role="alert">
-              {% for message in messages %} {{ message }} {% endfor %}
-            </div>
-            {% endif %} {% endwith %}
-            <div class="card">
-              <div class="card-body">
-                <div class="table-responsive">
-                  <table class="table table-striped table-hover table-sm">
-                    <thead class="table-dark">
-                      <tr>
-                        <th>#</th>
-                        <th>Class Name</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {% for class in classes %}
-                      <tr data-class-id="{{ class.id }}">
-                        <td>{{ loop.index }}</td>
-                        <td>
-                          <input
-                            type="text"
-                            class="form-control editable"
-                            value="{{ class.name }}"
-                            data-id="{{ class.id }}"
-                            onblur="this.value = this.value.toLowerCase().replace(/\b\w/g, l => l.toUpperCase())"
-                            readonly
-                          />
-                          <div
-                            class="duplicate-error"
-                            id="duplicate-error-{{ class.id }}"
-                            style="display: none; color: red"
-                          >
-                            Duplicate class name found.
-                          </div>
-                        </td>
-                        <td>
-                          <button
-                            class="btn btn-sm btn-warning edit-btn"
-                            onclick="editRow(this)"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            class="btn btn-sm btn-success save-btn"
-                            style="display: none"
-                            onclick="saveRow(this)"
-                          >
-                            Save
-                          </button>
-                          <button
-                            class="btn btn-sm btn-danger"
-                            data-bs-toggle="modal"
-                            data-bs-target="#deleteClassModal"
-                            onclick="setDeleteAction({{ class.id }})"
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                      {% endfor %}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+      </div>
+      <div class="form-container" style="max-width: 1400px; margin: 0 auto">
+        {% with messages = get_flashed_messages() %} {% if messages %}
+        <div id="flash-message" class="alert alert-info" role="alert">
+          {% for message in messages %} {{ message }} {% endfor %}
+        </div>
+        {% endif %} {% endwith %}
+        <div class="card">
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-striped table-hover table-sm">
+                <thead class="table-dark">
+                  <tr>
+                    <th>#</th>
+                    <th>Class Name</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for class in classes %}
+                  <tr data-class-id="{{ class.id }}">
+                    <td>{{ loop.index }}</td>
+                    <td>
+                      <input
+                        type="text"
+                        class="form-control editable"
+                        value="{{ class.name }}"
+                        data-id="{{ class.id }}"
+                        onblur="this.value = this.value.toLowerCase().replace(/\b\w/g, l => l.toUpperCase())"
+                        readonly
+                      />
+                      <div
+                        class="duplicate-error"
+                        id="duplicate-error-{{ class.id }}"
+                        style="display: none; color: red"
+                      >
+                        Duplicate class name found.
+                      </div>
+                    </td>
+                    <td>
+                      <button
+                        class="btn btn-sm btn-warning edit-btn"
+                        onclick="editRow(this)"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        class="btn btn-sm btn-success save-btn"
+                        style="display: none"
+                        onclick="saveRow(this)"
+                      >
+                        Save
+                      </button>
+                      <button
+                        class="btn btn-sm btn-danger"
+                        data-bs-toggle="modal"
+                        data-bs-target="#deleteClassModal"
+                        onclick="setDeleteAction({{ class.id }})"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <script>
-      function editRow(btn) {
-        const row = btn.closest("tr");
-        const inputs = row.querySelectorAll(".editable");
-        inputs.forEach((input) => {
-          input.removeAttribute("readonly");
-        });
-        btn.style.display = "none";
-        row.querySelector(".save-btn").style.display = "inline-block";
+  </div>
+</div>
+<script>
+  function editRow(btn) {
+    const row = btn.closest("tr");
+    const inputs = row.querySelectorAll(".editable");
+    inputs.forEach((input) => {
+      input.removeAttribute("readonly");
+    });
+    btn.style.display = "none";
+    row.querySelector(".save-btn").style.display = "inline-block";
+  }
+
+  function saveRow(btn) {
+    const row = btn.closest("tr");
+    const classId = row.dataset.classId;
+    const name = row.querySelector('input[type="text"]').value;
+
+    // Create form and submit
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = '{{ url_for("admin.manage_classes") }}';
+
+    const fields = [
+      { name: "class_id", value: classId },
+      { name: "name", value: name },
+    ];
+
+    fields.forEach((field) => {
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = field.name;
+      input.value = field.value;
+      form.appendChild(input);
+    });
+
+    document.body.appendChild(form);
+    form.submit();
+  }
+  function setDeleteAction(classId) {
+    window.currentDeleteId = classId;
+  }
+
+  function confirmDeleteClass() {
+    console.log(
+      "confirmDeleteClass called from template, currentDeleteId:",
+      window.currentDeleteId
+    );
+    if (window.currentDeleteId) {
+      console.log("Creating form for deletion");
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = `/admin/delete_class/${window.currentDeleteId}`;
+      console.log("Form action:", form.action);
+      document.body.appendChild(form);
+
+      // Close the modal before submitting
+      const modalElement = document.getElementById("deleteClassModal");
+      console.log("Modal element found:", modalElement);
+      if (modalElement) {
+        const modal = bootstrap.Modal.getInstance(modalElement);
+        console.log("Modal instance:", modal);
+        if (modal) {
+          modal.hide();
+        }
       }
 
-      function saveRow(btn) {
-        const row = btn.closest("tr");
-        const classId = row.dataset.classId;
-        const name = row.querySelector('input[type="text"]').value;
-
-        // Create form and submit
-        const form = document.createElement("form");
-        form.method = "POST";
-        form.action = '{{ url_for("admin.manage_classes") }}';
-
-        const fields = [
-          { name: "class_id", value: classId },
-          { name: "name", value: name },
-        ];
-
-        fields.forEach((field) => {
-          const input = document.createElement("input");
-          input.type = "hidden";
-          input.name = field.name;
-          input.value = field.value;
-          form.appendChild(input);
-        });
-
-        document.body.appendChild(form);
-        form.submit();
-      }
-      function setDeleteAction(classId) {
-        window.currentDeleteId = classId;
-      }
-    </script>
-    <div
-      class="modal fade"
-      id="deleteClassModal"
-      tabindex="-1"
-      aria-labelledby="deleteClassModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="deleteClassModalLabel">Confirm Deletion</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            Are you sure you want to delete this class? This action cannot be
-            undone.
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
-              Cancel
-            </button>
-            <button type="button" class="btn btn-danger" onclick="confirmDeleteClass()">Delete</button>
-          </div>
-        </div>
+      console.log("Submitting form");
+      form.submit();
+    } else {
+      console.log("No currentDeleteId found");
+    }
+  }
+</script>
+<div
+  class="modal fade"
+  id="deleteClassModal"
+  tabindex="-1"
+  aria-labelledby="deleteClassModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteClassModalLabel">Confirm Deletion</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete this class? This action cannot be
+        undone.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn btn-danger"
+          onclick="console.log('Delete button clicked'); confirmDeleteClass()"
+        >
+          Delete
+        </button>
       </div>
     </div>
-    <script>
-      // Duplicate check on input
-      document.querySelectorAll(".editable").forEach((input) => {
-        input.addEventListener("input", function () {
-          const name = this.value.trim();
-          const id = this.dataset.id;
-          if (name.length > 2) {
-            fetch(
-              `/admin/check_duplicate/class/${encodeURIComponent(
-                name
-              )}?exclude_id=${id}`
-            )
-              .then((response) => response.json())
-              .then((data) => {
-                const errorDiv = document.getElementById(
-                  `duplicate-error-${id}`
-                );
-                if (data.exists) {
-                  errorDiv.style.display = "block";
-                } else {
-                  errorDiv.style.display = "none";
-                }
-              })
-              .catch((err) => console.error("Error checking duplicate:", err));
-          } else {
-            document.getElementById(`duplicate-error-${id}`).style.display =
-              "none";
-          }
-        });
-      });
-      // Hide flash message after 2 seconds
-      setTimeout(() => {
-        const flash = document.getElementById("flash-message");
-        if (flash) flash.style.display = "none";
-      }, 2000);
-    </script>
-    
+  </div>
+</div>
+<script>
+  // Duplicate check on input
+  document.querySelectorAll(".editable").forEach((input) => {
+    input.addEventListener("input", function () {
+      const name = this.value.trim();
+      const id = this.dataset.id;
+      if (name.length > 2) {
+        fetch(
+          `/admin/check_duplicate/class/${encodeURIComponent(
+            name
+          )}?exclude_id=${id}`
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            const errorDiv = document.getElementById(`duplicate-error-${id}`);
+            if (data.exists) {
+              errorDiv.style.display = "block";
+            } else {
+              errorDiv.style.display = "none";
+            }
+          })
+          .catch((err) => console.error("Error checking duplicate:", err));
+      } else {
+        document.getElementById(`duplicate-error-${id}`).style.display = "none";
+      }
+    });
+  });
+  // Hide flash message after 2 seconds
+  setTimeout(() => {
+    const flash = document.getElementById("flash-message");
+    if (flash) flash.style.display = "none";
+  }, 2000);
+</script>
