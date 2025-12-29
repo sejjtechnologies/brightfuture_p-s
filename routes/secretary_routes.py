@@ -67,7 +67,17 @@ def register_pupil():
                 flash('Please fill in all required fields.', 'danger')
                 classes = SchoolClass.query.all()
                 streams = Stream.query.all()
-                return render_template('secretary/register_pupil.html', classes=classes, streams=streams)
+                # Check if this is an AJAX request (from loadContent)
+
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+
+                    return render_template('secretary/register_pupil.html', classes=classes, streams=streams)
+
+                else:
+
+                    # Direct access - redirect to dashboard
+
+                    return redirect(url_for('secretary.dashboard'))
 
             # Generate admission number
             current_year = datetime.now().year
@@ -91,7 +101,17 @@ def register_pupil():
                 flash('Admission number generation conflict. Please try again.', 'danger')
                 classes = SchoolClass.query.all()
                 streams = Stream.query.all()
-                return render_template('secretary/register_pupil.html', classes=classes, streams=streams)
+                # Check if this is an AJAX request (from loadContent)
+
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+
+                    return render_template('secretary/register_pupil.html', classes=classes, streams=streams)
+
+                else:
+
+                    # Direct access - redirect to dashboard
+
+                    return redirect(url_for('secretary.dashboard'))
 
             # Parse date of birth
             try:
@@ -100,7 +120,17 @@ def register_pupil():
                 flash('Invalid date format.', 'danger')
                 classes = SchoolClass.query.all()
                 streams = Stream.query.all()
-                return render_template('secretary/register_pupil.html', classes=classes, streams=streams)
+                # Check if this is an AJAX request (from loadContent)
+
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+
+                    return render_template('secretary/register_pupil.html', classes=classes, streams=streams)
+
+                else:
+
+                    # Direct access - redirect to dashboard
+
+                    return redirect(url_for('secretary.dashboard'))
 
             # Create new pupil
             new_pupil = Pupil(
@@ -129,19 +159,49 @@ def register_pupil():
             # Stay on the same page instead of redirecting
             classes = SchoolClass.query.all()
             streams = Stream.query.all()
-            return render_template('secretary/register_pupil.html', classes=classes, streams=streams)
+            # Check if this is an AJAX request (from loadContent)
+
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+
+                return render_template('secretary/register_pupil.html', classes=classes, streams=streams)
+
+            else:
+
+                # Direct access - redirect to dashboard
+
+                return redirect(url_for('secretary.dashboard'))
 
         except Exception as e:
             db.session.rollback()
             flash(f'An error occurred: {str(e)}', 'danger')
             classes = SchoolClass.query.all()
             streams = Stream.query.all()
-            return render_template('secretary/register_pupil.html', classes=classes, streams=streams)
+            # Check if this is an AJAX request (from loadContent)
+
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+
+                return render_template('secretary/register_pupil.html', classes=classes, streams=streams)
+
+            else:
+
+                # Direct access - redirect to dashboard
+
+                return redirect(url_for('secretary.dashboard'))
 
     # GET request - show registration form
     classes = SchoolClass.query.all()
     streams = Stream.query.all()
-    return render_template('secretary/register_pupil.html', classes=classes, streams=streams)
+    # Check if this is an AJAX request (from loadContent)
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+
+        return render_template('secretary/register_pupil.html', classes=classes, streams=streams)
+
+    else:
+
+        # Direct access - redirect to dashboard
+
+        return redirect(url_for('secretary.dashboard'))
 
 @secretary_bp.route('/manage-pupils')
 def manage_pupils():
@@ -160,7 +220,22 @@ def manage_pupils():
     classes = SchoolClass.query.all()
     streams = Stream.query.all()
 
-    return render_template('secretary/manage_pupils.html', pupils=pupils, classes=classes, streams=streams)
+    # Check if this is an AJAX request (from loadContent)
+
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+
+
+        return render_template('secretary/manage_pupils.html', pupils=pupils, classes=classes, streams=streams)
+
+
+    else:
+
+
+        # Direct access - redirect to dashboard
+
+
+        return redirect(url_for('secretary.dashboard'))
 
 @secretary_bp.route('/edit-pupil/<int:pupil_id>', methods=['GET', 'POST'])
 def edit_pupil(pupil_id):
@@ -186,7 +261,17 @@ def edit_pupil(pupil_id):
                     flash('Invalid date format', 'danger')
                     classes = SchoolClass.query.all()
                     streams = Stream.query.all()
-                    return render_template('secretary/edit_pupil.html', pupil=pupil, classes=classes, streams=streams)
+                    # Check if this is an AJAX request (from loadContent)
+
+                    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+
+                        return render_template('secretary/edit_pupil.html', pupil=pupil, classes=classes, streams=streams)
+
+                    else:
+
+                        # Direct access - redirect to dashboard
+
+                        return redirect(url_for('secretary.dashboard'))
 
             pupil.gender = request.form.get('gender', pupil.gender)
             pupil.address = request.form.get('address', pupil.address)
@@ -217,12 +302,32 @@ def edit_pupil(pupil_id):
             flash(f'An error occurred: {str(e)}', 'danger')
             classes = SchoolClass.query.all()
             streams = Stream.query.all()
-            return render_template('secretary/edit_pupil.html', pupil=pupil, classes=classes, streams=streams)
+            # Check if this is an AJAX request (from loadContent)
+
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+
+                return render_template('secretary/edit_pupil.html', pupil=pupil, classes=classes, streams=streams)
+
+            else:
+
+                # Direct access - redirect to dashboard
+
+                return redirect(url_for('secretary.dashboard'))
 
     # GET request - show edit form
     classes = SchoolClass.query.all()
     streams = Stream.query.all()
-    return render_template('secretary/edit_pupil.html', pupil=pupil, classes=classes, streams=streams)
+    # Check if this is an AJAX request (from loadContent)
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+
+        return render_template('secretary/edit_pupil.html', pupil=pupil, classes=classes, streams=streams)
+
+    else:
+
+        # Direct access - redirect to dashboard
+
+        return redirect(url_for('secretary.dashboard'))
 
 @secretary_bp.route('/delete-pupil', methods=['POST'])
 def delete_pupil():

@@ -1,9 +1,10 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
 from models.auth_models import SystemUser, Role, db
-from models.admin_models import SchoolClass, Subject, Stream, ClassStream, TeacherAssignment, AcademicYear, Term, ExamSchedule, Notification, SystemSetting
+from models.admin_models import SchoolClass, Subject, Stream, ClassStream, TeacherAssignment, AcademicYear, Term, ExamSchedule, Notification, NotificationRead, SystemSetting
 from werkzeug.security import generate_password_hash
 from datetime import datetime, timedelta
 from sqlalchemy import text
+import pytz
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
@@ -85,12 +86,24 @@ def create_staff():
             flash('Role not found!')
             return redirect(url_for('admin.create_staff'))
         hashed = generate_password_hash(password)
-        new_user = SystemUser(username=username, email=email, password_hash=hashed, role_id=role.id)
+        # Get the next display_id
+        max_display_id = db.session.query(db.func.max(SystemUser.display_id)).scalar() or 0
+        new_user = SystemUser(display_id=max_display_id + 1, username=username, email=email, password_hash=hashed, role_id=role.id)
         db.session.add(new_user)
         db.session.commit()
         flash('Staff created successfully!')
         return redirect(url_for('admin.dashboard'))
-    return render_template('admin/create_staff.html', roles=roles, min_password_length=min_length)
+    # Check if this is an AJAX request (from loadContent)
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+
+        return render_template('admin/create_staff.html', roles=roles, min_password_length=min_length)
+
+    else:
+
+        # Direct access - redirect to dashboard
+
+        return redirect(url_for('admin.dashboard'))
 
 @admin_bp.route('/manage_users', methods=['GET', 'POST'])
 def manage_users():
@@ -137,7 +150,17 @@ def manage_users():
             u.last_login_kampala = (u.last_login + kampala_offset).strftime('%d/%m/%Y %I:%M%p').lower()
         else:
             u.last_login_kampala = 'Never'
-    return render_template('admin/manage_users.html', users=users, roles=roles, min_password_length=min_length)
+    # Check if this is an AJAX request (from loadContent)
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+
+        return render_template('admin/manage_users.html', users=users, roles=roles, min_password_length=min_length)
+
+    else:
+
+        # Direct access - redirect to dashboard
+
+        return redirect(url_for('admin.dashboard'))
 
 @admin_bp.route('/delete_user/<int:user_id>', methods=['POST'])
 def delete_user(user_id):
@@ -148,15 +171,33 @@ def delete_user(user_id):
         return redirect(url_for('authbp.login'))
     u = SystemUser.query.get(user_id)
     if u:
+        # Check for dependencies before deleting
+        teacher_assignments = TeacherAssignment.query.filter_by(teacher_id=user_id).count()
+        notifications_created = Notification.query.filter_by(created_by=user_id).count()
+        notifications_read = NotificationRead.query.filter_by(user_id=user_id).count()
+        settings_updated = SystemSetting.query.filter_by(updated_by=user_id).count()
+        
+        if teacher_assignments > 0:
+            flash(f'Cannot delete user: {u.username} has {teacher_assignments} teacher assignment(s). Please remove assignments first.')
+            return redirect(url_for('admin.manage_users'))
+        elif notifications_created > 0:
+            flash(f'Cannot delete user: {u.username} has created {notifications_created} notification(s).')
+            return redirect(url_for('admin.manage_users'))
+        elif notifications_read > 0 or settings_updated > 0:
+            # These can be safely deleted
+            NotificationRead.query.filter_by(user_id=user_id).delete()
+            SystemSetting.query.filter_by(updated_by=user_id).update({'updated_by': None})
+            db.session.commit()
+        
         db.session.delete(u)
         db.session.commit()
-        # Renumber the remaining users' IDs to be sequential
+        
+        # Renumber display_ids to maintain sequential numbering
         users = SystemUser.query.order_by(SystemUser.id.asc()).all()
-        for new_id, usr in enumerate(users, 1):
-            if usr.id != new_id:
-                # Update ID using raw SQL to avoid issues
-                db.session.execute(text(f"UPDATE system_users SET id = {new_id} WHERE id = {usr.id}"))
+        for display_id, usr in enumerate(users, 1):
+            usr.display_id = display_id
         db.session.commit()
+        
         flash('User deleted successfully!')
     return redirect(url_for('admin.manage_users'))
 
@@ -177,7 +218,17 @@ def create_class():
         db.session.commit()
         flash('Class created successfully!')
         return redirect(url_for('admin.create_class'))
-    return render_template('admin/create_class.html')
+    # Check if this is an AJAX request (from loadContent)
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+
+        return render_template('admin/create_class.html')
+
+    else:
+
+        # Direct access - redirect to dashboard
+
+        return redirect(url_for('admin.dashboard'))
 
 @admin_bp.route('/manage_classes', methods=['GET', 'POST'])
 def manage_classes():
@@ -199,7 +250,17 @@ def manage_classes():
                 flash('Class updated successfully!')
         return redirect(url_for('admin.manage_classes'))
     classes = SchoolClass.query.order_by(SchoolClass.id.asc()).all()
-    return render_template('admin/manage_classes.html', classes=classes)
+    # Check if this is an AJAX request (from loadContent)
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+
+        return render_template('admin/manage_classes.html', classes=classes)
+
+    else:
+
+        # Direct access - redirect to dashboard
+
+        return redirect(url_for('admin.dashboard'))
 
 @admin_bp.route('/delete_class/<int:class_id>', methods=['POST'])
 def delete_class(class_id):
@@ -232,7 +293,17 @@ def create_subject():
         db.session.commit()
         flash('Subject created successfully!')
         return redirect(url_for('admin.create_subject'))
-    return render_template('admin/create_subject.html')
+    # Check if this is an AJAX request (from loadContent)
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+
+        return render_template('admin/create_subject.html')
+
+    else:
+
+        # Direct access - redirect to dashboard
+
+        return redirect(url_for('admin.dashboard'))
 
 @admin_bp.route('/manage_subjects', methods=['GET', 'POST'])
 def manage_subjects():
@@ -254,7 +325,17 @@ def manage_subjects():
                 flash('Subject updated successfully!')
         return redirect(url_for('admin.manage_subjects'))
     subjects = Subject.query.order_by(Subject.id.asc()).all()
-    return render_template('admin/manage_subjects.html', subjects=subjects)
+    # Check if this is an AJAX request (from loadContent)
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+
+        return render_template('admin/manage_subjects.html', subjects=subjects)
+
+    else:
+
+        # Direct access - redirect to dashboard
+
+        return redirect(url_for('admin.dashboard'))
 
 @admin_bp.route('/delete_subject/<int:subject_id>', methods=['POST'])
 def delete_subject(subject_id):
@@ -287,7 +368,17 @@ def create_stream():
         db.session.commit()
         flash('Stream created successfully!')
         return redirect(url_for('admin.create_stream'))
-    return render_template('admin/create_stream.html')
+    # Check if this is an AJAX request (from loadContent)
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+
+        return render_template('admin/create_stream.html')
+
+    else:
+
+        # Direct access - redirect to dashboard
+
+        return redirect(url_for('admin.dashboard'))
 
 @admin_bp.route('/manage_streams', methods=['GET', 'POST'])
 def manage_streams():
@@ -309,7 +400,17 @@ def manage_streams():
                 flash('Stream updated successfully!')
         return redirect(url_for('admin.manage_streams'))
     streams = Stream.query.order_by(Stream.id.asc()).all()
-    return render_template('admin/manage_streams.html', streams=streams)
+    # Check if this is an AJAX request (from loadContent)
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+
+        return render_template('admin/manage_streams.html', streams=streams)
+
+    else:
+
+        # Direct access - redirect to dashboard
+
+        return redirect(url_for('admin.dashboard'))
 
 @admin_bp.route('/delete_stream/<int:stream_id>', methods=['POST'])
 def delete_stream(stream_id):
@@ -356,7 +457,17 @@ def assign_teachers():
         db.session.commit()
         flash('Teacher assigned successfully!')
         return redirect(url_for('admin.assign_teachers'))
-    return render_template('admin/assign_teachers.html', teachers=teachers, classes=classes, streams=streams, subjects=subjects)
+    # Check if this is an AJAX request (from loadContent)
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+
+        return render_template('admin/assign_teachers.html', teachers=teachers, classes=classes, streams=streams, subjects=subjects)
+
+    else:
+
+        # Direct access - redirect to dashboard
+
+        return redirect(url_for('admin.dashboard'))
 
 @admin_bp.route('/manage_assignments', methods=['GET', 'POST'])
 def manage_assignments():
@@ -404,7 +515,17 @@ def manage_assignments():
     classes = SchoolClass.query.all()
     streams = Stream.query.all()
     subjects = Subject.query.all()
-    return render_template('admin/manage_assignments.html', assignments=assignments, teachers=teachers, classes=classes, streams=streams, subjects=subjects)
+    # Check if this is an AJAX request (from loadContent)
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+
+        return render_template('admin/manage_assignments.html', assignments=assignments, teachers=teachers, classes=classes, streams=streams, subjects=subjects)
+
+    else:
+
+        # Direct access - redirect to dashboard
+
+        return redirect(url_for('admin.dashboard'))
 
 @admin_bp.route('/delete_assignment/<int:assignment_id>', methods=['POST'])
 def delete_assignment(assignment_id):
@@ -439,7 +560,17 @@ def create_academic_year():
         db.session.commit()
         flash('Academic year created successfully!')
         return redirect(url_for('admin.create_academic_year'))
-    return render_template('admin/create_academic_year.html')
+    # Check if this is an AJAX request (from loadContent)
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+
+        return render_template('admin/create_academic_year.html')
+
+    else:
+
+        # Direct access - redirect to dashboard
+
+        return redirect(url_for('admin.dashboard'))
 
 @admin_bp.route('/manage_academic_years', methods=['GET', 'POST'])
 def manage_academic_years():
@@ -465,7 +596,17 @@ def manage_academic_years():
                 flash('Academic year updated successfully!')
         return redirect(url_for('admin.manage_academic_years'))
     years = AcademicYear.query.order_by(AcademicYear.id.asc()).all()
-    return render_template('admin/manage_academic_years.html', years=years)
+    # Check if this is an AJAX request (from loadContent)
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+
+        return render_template('admin/manage_academic_years.html', years=years)
+
+    else:
+
+        # Direct access - redirect to dashboard
+
+        return redirect(url_for('admin.dashboard'))
 
 @admin_bp.route('/delete_academic_year/<int:year_id>', methods=['POST'])
 def delete_academic_year(year_id):
@@ -503,7 +644,17 @@ def create_term():
         db.session.commit()
         flash('Term created successfully!')
         return redirect(url_for('admin.create_term'))
-    return render_template('admin/create_term.html', academic_years=academic_years)
+    # Check if this is an AJAX request (from loadContent)
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+
+        return render_template('admin/create_term.html', academic_years=academic_years)
+
+    else:
+
+        # Direct access - redirect to dashboard
+
+        return redirect(url_for('admin.dashboard'))
 
 @admin_bp.route('/manage_terms', methods=['GET', 'POST'])
 def manage_terms():
@@ -534,7 +685,17 @@ def manage_terms():
         return redirect(url_for('admin.manage_terms'))
     terms = Term.query.join(AcademicYear).add_columns(AcademicYear.name.label('year_name')).order_by(Term.id.asc()).all()
     academic_years = AcademicYear.query.all()
-    return render_template('admin/manage_terms.html', terms=terms, academic_years=academic_years)
+    # Check if this is an AJAX request (from loadContent)
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+
+        return render_template('admin/manage_terms.html', terms=terms, academic_years=academic_years)
+
+    else:
+
+        # Direct access - redirect to dashboard
+
+        return redirect(url_for('admin.dashboard'))
 
 @admin_bp.route('/delete_term/<int:term_id>', methods=['POST'])
 def delete_term(term_id):
@@ -611,7 +772,17 @@ def create_exam_schedule():
                 return jsonify({'success': True, 'message': message})
             flash(message)
         return redirect(url_for('admin.create_exam_schedule'))
-    return render_template('admin/create_exam_schedule.html', terms=terms, subjects=subjects, classes=classes)
+    # Check if this is an AJAX request (from loadContent)
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+
+        return render_template('admin/create_exam_schedule.html', terms=terms, subjects=subjects, classes=classes)
+
+    else:
+
+        # Direct access - redirect to dashboard
+
+        return redirect(url_for('admin.dashboard'))
 
 @admin_bp.route('/check_exam_duplicate', methods=['POST'])
 def check_exam_duplicate():
@@ -666,7 +837,17 @@ def manage_exam_schedules():
     terms = Term.query.all()
     subjects = Subject.query.all()
     classes = SchoolClass.query.all()
-    return render_template('admin/manage_exam_schedules.html', schedules=schedules, terms=terms, subjects=subjects, classes=classes)
+    # Check if this is an AJAX request (from loadContent)
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+
+        return render_template('admin/manage_exam_schedules.html', schedules=schedules, terms=terms, subjects=subjects, classes=classes)
+
+    else:
+
+        # Direct access - redirect to dashboard
+
+        return redirect(url_for('admin.dashboard'))
 
 @admin_bp.route('/delete_exam_schedule/<int:schedule_id>', methods=['POST'])
 def delete_exam_schedule(schedule_id):
@@ -705,9 +886,25 @@ def create_notification():
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                 return jsonify({'success': True, 'message': 'Notification created successfully!'})
             flash('Notification created successfully!')
-            return redirect(url_for('admin.manage_notifications'))
+            return redirect(url_for('admin.dashboard'))
     roles = Role.query.filter(Role.name.notin_(['Admin', 'Parent'])).all()
-    return render_template('admin/create_notification.html', roles=roles)
+
+    # Check if this is an AJAX request (from loadContent)
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        # Check if this is an AJAX request (from loadContent)
+
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+
+            return render_template('admin/create_notification.html', roles=roles)
+
+        else:
+
+            # Direct access - redirect to dashboard
+
+            return redirect(url_for('admin.dashboard'))
+    else:
+        # Direct access - redirect to dashboard
+        return redirect(url_for('admin.dashboard'))
 
 @admin_bp.route('/manage_notifications', methods=['GET', 'POST'])
 def manage_notifications():
@@ -724,21 +921,28 @@ def manage_notifications():
         n = Notification.query.get(notification_id)
         if n:
             if Notification.query.filter(Notification.title == title, Notification.id != notification_id).first():
-                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                    return jsonify({'success': False, 'message': 'Notification with this title already exists!'})
                 flash('Notification with this title already exists!')
             else:
                 n.title = title
                 n.message = message
                 n.visibility = visibility
                 db.session.commit()
-                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                    return jsonify({'success': True, 'message': 'Notification updated successfully!'})
                 flash('Notification updated successfully!')
-        return redirect(url_for('admin.manage_notifications'))
+        return redirect(url_for('admin.dashboard'))
     notifications = Notification.query.join(SystemUser).order_by(Notification.created_at.desc()).limit(50).all()
     roles = Role.query.filter(Role.name.notin_(['Admin', 'Parent'])).all()
-    return render_template('admin/manage_notifications.html', notifications=notifications, roles=roles)
+
+    # Convert created_at to East Africa Time (Kampala) with AM/PM format
+    eat_tz = pytz.timezone('Africa/Nairobi')
+    for notification in notifications:
+        notification.formatted_created_at = notification.created_at.replace(tzinfo=pytz.utc).astimezone(eat_tz).strftime('%Y-%m-%d %I:%M %p')
+
+    # Check if this is an AJAX request (from loadContent)
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render_template('admin/manage_notifications.html', notifications=notifications, roles=roles)
+    else:
+        # Direct access - redirect to dashboard
+        return redirect(url_for('admin.dashboard'))
 
 @admin_bp.route('/delete_notification/<int:notification_id>', methods=['POST'])
 def delete_notification(notification_id):
@@ -749,9 +953,14 @@ def delete_notification(notification_id):
         return redirect(url_for('authbp.login'))
     notification = Notification.query.get(notification_id)
     if notification:
+        # Delete associated NotificationRead records first
+        NotificationRead.query.filter_by(notification_id=notification_id).delete()
         db.session.delete(notification)
         db.session.commit()
-        flash('Notification deleted successfully!')
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({'success': True, 'message': 'Notification deleted successfully!'})
+        else:
+            flash('Notification deleted successfully!')
     return redirect(url_for('admin.manage_notifications'))
 
 def populate_default_settings():
@@ -838,7 +1047,22 @@ def system_settings():
     # Create a flat dictionary for easy access in template
     settings_dict = {setting.key: setting for setting in settings}
 
-    return render_template('admin/system_settings.html', settings_by_category=settings_by_category, settings_dict=settings_dict)
+    # Check if this is an AJAX request (from loadContent)
+
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+
+
+        return render_template('admin/system_settings.html', settings_by_category=settings_by_category, settings_dict=settings_dict)
+
+
+    else:
+
+
+        # Direct access - redirect to dashboard
+
+
+        return redirect(url_for('admin.dashboard'))
 
 @admin_bp.route('/update_system_setting', methods=['POST'])
 def update_system_setting():
@@ -923,8 +1147,23 @@ def set_current_term_year():
     current_academic_year_id = current_academic_year_setting.value if current_academic_year_setting else None
     current_term_id = current_term_setting.value if current_term_setting else None
 
-    return render_template('admin/set_current_term_year.html',
+    # Check if this is an AJAX request (from loadContent)
+
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+
+
+        return render_template('admin/set_current_term_year.html',
                          academic_years=academic_years,
                          terms=terms,
                          current_academic_year_id=current_academic_year_id,
                          current_term_id=current_term_id)
+
+
+    else:
+
+
+        # Direct access - redirect to dashboard
+
+
+        return redirect(url_for('admin.dashboard'))

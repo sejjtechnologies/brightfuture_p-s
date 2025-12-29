@@ -29,6 +29,45 @@
       .class-btn {
         width: 140px;
       }
+      .sidebar-button:hover {
+        background: #f0f0f0 !important;
+      }
+      .sidebar-section {
+        margin-bottom: 10px;
+      }
+      .sidebar-item {
+        cursor: pointer;
+        padding: 5px 10px;
+        font-weight: bold;
+        color: #ffff00;
+        text-transform: uppercase;
+        font-size: 0.75em;
+      }
+      .sidebar-item i {
+        color: #ff0000;
+      }
+      .sidebar-item:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+      .sidebar-subitem {
+        cursor: pointer;
+        padding: 3px 20px;
+        color: white;
+        font-size: 0.8em;
+      }
+      .sidebar-subitem:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+      @media (max-width: 767px) {
+        .sidebar-item {
+          font-size: 0.65em;
+          padding: 3px 8px;
+        }
+        .sidebar-subitem {
+          font-size: 0.7em;
+          padding: 2px 15px;
+        }
+      }
       @media (min-width: 768px) {
         .responsive-btn {
           font-size: 0.8em;
@@ -42,15 +81,15 @@
       <div class="row">
         <div
           id="sidebar"
-          class="col-12 col-md-2 bg-light"
+          class="col-12 col-md-2 bg-primary"
           style="
             height: calc(100vh - 60px);
-            background-color: lightblue !important;
+            background-color: #00008b !important;
             position: fixed;
             padding-top: 2px;
             z-index: 1000;
             overflow-y: auto;
-            width: 20%;
+            width: 15%;
           "
         >
           <button
@@ -61,81 +100,194 @@
           <div class="d-flex flex-column h-100">
             <div style="padding-top: 60px; padding-bottom: 60px">
               <div
-                class="d-flex flex-column align-items-center"
-                style="gap: 0.5rem"
+                class="d-flex flex-column align-items-start"
+                style="gap: 0.5rem; padding-left: 10px"
               >
-                <button
-                  class="btn btn-danger d-flex align-items-center justify-content-start"
-                  onclick="showDashboard()"
-                  style="width: 100%; min-height: 45px"
-                >
+                <div class="sidebar-item" onclick="showDashboard()">
                   <i class="bi bi-house me-2" style="color: black"></i>
                   Dashboard
-                </button>
-                <button
-                  class="btn btn-danger d-flex align-items-center justify-content-start"
-                  onclick="toggleStaffButtons()"
-                  style="width: 100%; min-height: 45px"
-                >
-                  <i class="bi bi-people me-2" style="color: black"></i> Staff &
-                  Role Management
-                </button>
-                <button
-                  class="btn btn-danger d-flex align-items-center justify-content-start"
-                  onclick="toggleClassButtons()"
-                  style="width: 100%; min-height: 45px"
-                >
-                  <i class="bi bi-book me-2" style="color: black"></i> Class,
-                  Subjects & Streams Setup/ Teacher Assignment
-                </button>
-                <button
-                  class="btn btn-danger d-flex align-items-center justify-content-start"
-                  onclick="toggleAcademicButtons()"
-                  style="width: 100%; min-height: 45px"
-                >
-                  <i class="bi bi-calendar-event me-2" style="color: black"></i>
-                  Academic Year, Term & Exam Schedule
-                </button>
-                <button
-                  class="btn btn-danger d-flex align-items-center justify-content-start"
-                  onclick="loadContent('{{ url_for('admin.manage_terms') }}')"
-                  style="width: 100%; min-height: 45px"
-                >
-                  <i class="bi bi-table me-2" style="color: black"></i> Manage
-                  Terms
-                </button>
-                <button
-                  class="btn btn-danger d-flex align-items-center justify-content-start"
-                  style="width: 100%; min-height: 45px"
-                >
-                  <i class="bi bi-bar-chart me-2" style="color: black"></i>
-                  School-Wide Reporting
-                </button>
-                <button
-                  class="btn btn-danger d-flex align-items-center justify-content-start"
-                  onclick="toggleNotificationButtons()"
-                  style="width: 100%; min-height: 45px"
-                >
-                  <i class="bi bi-bell me-2" style="color: black"></i>
-                  Notifications & Announcements
-                </button>
-                <button
-                  class="btn btn-danger d-flex align-items-center justify-content-start"
+                </div>
+                <div class="sidebar-section">
+                  <div class="sidebar-item">
+                    <i class="bi bi-people me-2" style="color: black"></i> Staff
+                    & Role Management
+                  </div>
+                  <div
+                    class="sidebar-subitem"
+                    onclick="loadContent('{{ url_for('admin.create_staff') }}')"
+                  >
+                    <i class="bi bi-person-plus me-2" style="color: black"></i>
+                    Create Staff
+                  </div>
+                  <div
+                    class="sidebar-subitem"
+                    onclick="loadContent('{{ url_for('admin.manage_users') }}')"
+                  >
+                    <i class="bi bi-people me-2" style="color: black"></i>
+                    Manage Users
+                  </div>
+                </div>
+                <div class="sidebar-section">
+                  <div class="sidebar-item">
+                    <i class="bi bi-book me-2" style="color: black"></i> Class,
+                    Subjects & Streams Setup/ Teacher Assignment
+                  </div>
+                  <div
+                    class="sidebar-subitem"
+                    onclick="loadContent('{{ url_for('admin.create_class') }}')"
+                  >
+                    <i class="bi bi-plus-circle me-2" style="color: black"></i>
+                    Create Class
+                  </div>
+                  <div
+                    class="sidebar-subitem"
+                    onclick="loadContent('{{ url_for('admin.manage_classes') }}')"
+                  >
+                    <i class="bi bi-list me-2" style="color: black"></i> Manage
+                    Classes
+                  </div>
+                  <div
+                    class="sidebar-subitem"
+                    onclick="loadContent('{{ url_for('admin.create_subject') }}')"
+                  >
+                    <i class="bi bi-plus-circle me-2" style="color: black"></i>
+                    Create Subject
+                  </div>
+                  <div
+                    class="sidebar-subitem"
+                    onclick="loadContent('{{ url_for('admin.manage_subjects') }}')"
+                  >
+                    <i class="bi bi-list me-2" style="color: black"></i> Manage
+                    Subjects
+                  </div>
+                  <div
+                    class="sidebar-subitem"
+                    onclick="loadContent('{{ url_for('admin.create_stream') }}')"
+                  >
+                    <i class="bi bi-plus-circle me-2" style="color: black"></i>
+                    Create Stream
+                  </div>
+                  <div
+                    class="sidebar-subitem"
+                    onclick="loadContent('{{ url_for('admin.manage_streams') }}')"
+                  >
+                    <i class="bi bi-list me-2" style="color: black"></i> Manage
+                    Streams
+                  </div>
+                  <div
+                    class="sidebar-subitem"
+                    onclick="loadContent('{{ url_for('admin.assign_teachers') }}')"
+                  >
+                    <i class="bi bi-person-check me-2" style="color: black"></i>
+                    Assign Teachers
+                  </div>
+                  <div
+                    class="sidebar-subitem"
+                    onclick="loadContent('{{ url_for('admin.manage_assignments') }}')"
+                  >
+                    <i class="bi bi-gear me-2" style="color: black"></i> Manage
+                    Assignments
+                  </div>
+                </div>
+                <div class="sidebar-section">
+                  <div class="sidebar-item">
+                    <i
+                      class="bi bi-calendar-event me-2"
+                      style="color: black"
+                    ></i>
+                    Academic Management
+                  </div>
+                  <div
+                    class="sidebar-subitem"
+                    onclick="loadContent('{{ url_for('admin.create_academic_year') }}')"
+                  >
+                    <i class="bi bi-plus-circle me-2" style="color: black"></i>
+                    Create Academic Year
+                  </div>
+                  <div
+                    class="sidebar-subitem"
+                    onclick="loadContent('{{ url_for('admin.manage_academic_years') }}')"
+                  >
+                    <i class="bi bi-list me-2" style="color: black"></i> Manage
+                    Academic Years
+                  </div>
+                  <div
+                    class="sidebar-subitem"
+                    onclick="loadContent('{{ url_for('admin.create_term') }}')"
+                  >
+                    <i class="bi bi-plus-circle me-2" style="color: black"></i>
+                    Create Term
+                  </div>
+                  <div
+                    class="sidebar-subitem"
+                    onclick="loadContent('{{ url_for('admin.manage_terms') }}')"
+                  >
+                    <i class="bi bi-list me-2" style="color: black"></i> Manage
+                    Terms
+                  </div>
+                  <div
+                    class="sidebar-subitem"
+                    onclick="loadContent('{{ url_for('admin.set_current_term_year') }}')"
+                  >
+                    <i class="bi bi-gear me-2" style="color: black"></i> Set
+                    Current Term Year
+                  </div>
+                </div>
+                <div class="sidebar-section">
+                  <div class="sidebar-item">
+                    <i
+                      class="bi bi-clipboard-check me-2"
+                      style="color: black"
+                    ></i>
+                    Exam Management
+                  </div>
+                  <div
+                    class="sidebar-subitem"
+                    onclick="loadContent('{{ url_for('admin.create_exam_schedule') }}')"
+                  >
+                    <i class="bi bi-plus-circle me-2" style="color: black"></i>
+                    Create Exam Schedule
+                  </div>
+                  <div
+                    class="sidebar-subitem"
+                    onclick="loadContent('{{ url_for('admin.manage_exam_schedules') }}')"
+                  >
+                    <i class="bi bi-list me-2" style="color: black"></i> Manage
+                    Exam Schedules
+                  </div>
+                </div>
+                <div class="sidebar-section">
+                  <div class="sidebar-item">
+                    <i class="bi bi-bell me-2" style="color: black"></i>
+                    Notifications
+                  </div>
+                  <div
+                    class="sidebar-subitem"
+                    onclick="loadContent('{{ url_for('admin.create_notification') }}')"
+                  >
+                    <i class="bi bi-plus-circle me-2" style="color: black"></i>
+                    Create Notification
+                  </div>
+                  <div
+                    class="sidebar-subitem"
+                    onclick="loadContent('{{ url_for('admin.manage_notifications') }}')"
+                  >
+                    <i class="bi bi-list me-2" style="color: black"></i> Manage
+                    Notifications
+                  </div>
+                </div>
+                <div
+                  class="sidebar-item"
                   onclick="loadContent('{{ url_for('admin.system_settings') }}')"
-                  style="width: 100%; min-height: 45px"
                 >
                   <i class="bi bi-gear me-2" style="color: black"></i> System
                   Settings
-                </button>
+                </div>
+                <div class="sidebar-item">
+                  <i class="bi bi-bar-chart me-2" style="color: black"></i>
+                  School-Wide Reporting
+                </div>
               </div>
-            </div>
-            <div class="mt-auto pb-3 px-2">
-              <a
-                href="/auth/logout"
-                class="btn btn-danger w-100 d-flex align-items-center"
-                style="min-height: 45px"
-                ><i class="bi bi-box-arrow-right"></i> Logout</a
-              >
             </div>
           </div>
         </div>
@@ -145,7 +297,7 @@
             position: relative;
             min-height: 100vh;
             padding-bottom: 80px;
-            margin-left: 20%;
+            margin-left: 15%;
             padding-top: 100px;
           "
         >
@@ -178,218 +330,74 @@
                 justify-content: center;
                 position: fixed;
                 top: 20px;
-                left: 20%;
-                width: 80%;
+                left: 35%;
+                width: 50%;
                 z-index: 999;
               "
             >
-              <h5 style="color: blue; font-weight: bold; margin: 0">
-                Welcome Admin
-              </h5>
-              {% if term_progress %}
-              <p style="color: darkgreen; font-size: 0.8em; margin: 2px 0">
-                {{ term_progress.term_name }} ({{
-                term_progress.academic_year_name }}) - Term {{
-                term_progress.current_term_number }} of {{
-                term_progress.total_terms_in_year }}
-              </p>
-              <p style="color: darkgreen; font-size: 0.7em; margin: 0">
-                Days spent: {{ term_progress.days_spent }} | Remaining: {{
-                term_progress.days_remaining }}
-              </p>
-              {% else %}
-              <p
-                style="
-                  color: darkgreen;
-                  font-size: 0.9em;
-                  margin: 0;
-                  margin-top: 5px;
-                "
+              <div
+                class="card-body d-flex flex-column justify-content-center align-items-center text-center position-relative"
               >
-                Manage your school system efficiently
-              </p>
-              {% endif %}
+                <a
+                  href="/auth/logout"
+                  class="btn"
+                  style="
+                    position: fixed;
+                    left: 37%;
+                    top: 50px;
+                    background: white;
+                    color: red;
+                    border: 1px solid red;
+                    text-decoration: none;
+                    font-weight: bold;
+                    font-size: 0.75em;
+                    padding: 4px 8px;
+                    height: 28px;
+                    display: flex;
+                    align-items: center;
+                    z-index: 1001;
+                  "
+                  ><i class="bi bi-power me-1" style="font-size: 1em"></i>
+                  Logout</a
+                >
+                <h5 style="color: blue; font-weight: bold; margin: 0">
+                  Welcome Admin
+                </h5>
+                {% if term_progress %}
+                <p style="color: darkgreen; font-size: 0.8em; margin: 2px 0">
+                  {{ term_progress.term_name }} ({{
+                  term_progress.academic_year_name }}) - Term {{
+                  term_progress.current_term_number }} of {{
+                  term_progress.total_terms_in_year }}
+                </p>
+                <p style="color: darkgreen; font-size: 0.7em; margin: 0">
+                  Days spent: {{ term_progress.days_spent }} | Remaining: {{
+                  term_progress.days_remaining }}
+                </p>
+                {% else %}
+                <p
+                  style="
+                    color: darkgreen;
+                    font-size: 0.9em;
+                    margin: 0;
+                    margin-top: 5px;
+                  "
+                >
+                  Manage your school system efficiently
+                </p>
+                {% endif %}
+              </div>
             </div>
+
             <div
+              id="main-content"
               style="
-                display: none !important;
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                flex-direction: column;
-                align-items: center;
-                justify-content: flex-start;
-                z-index: 1000;
-                gap: 3px;
+                margin-top: 10px;
+                max-height: calc(100vh - 120px);
+                overflow-y: auto;
+                padding: 0 10px;
               "
-              id="staff-buttons"
-            >
-              <button
-                onclick="loadContent('{{ url_for('admin.create_staff') }}')"
-                class="btn btn-success responsive-btn staff-btn"
-              >
-                <i class="bi bi-person-plus"></i> Create Staff
-              </button>
-              <button
-                onclick="loadContent('{{ url_for('admin.manage_users') }}')"
-                class="btn btn-success responsive-btn staff-btn"
-              >
-                <i class="bi bi-people"></i> Manage Users
-              </button>
-            </div>
-            <div
-              style="
-                display: none;
-                position: absolute;
-                left: 50%;
-                top: 50%;
-                transform: translate(-50%, -50%);
-                flex-direction: column;
-                align-items: center;
-                justify-content: flex-start;
-                z-index: 1000;
-                gap: 3px;
-              "
-              id="class-buttons"
-            >
-              <button
-                onclick="loadContent('{{ url_for('admin.create_class') }}')"
-                class="btn btn-success responsive-btn class-btn"
-              >
-                <i class="bi bi-plus-circle"></i> Create Class
-              </button>
-              <button
-                onclick="loadContent('{{ url_for('admin.manage_classes') }}')"
-                class="btn btn-success responsive-btn class-btn"
-              >
-                <i class="bi bi-list"></i> Manage Classes
-              </button>
-              <button
-                onclick="loadContent('{{ url_for('admin.create_subject') }}')"
-                class="btn btn-success responsive-btn class-btn"
-              >
-                <i class="bi bi-plus-circle"></i> Create Subject
-              </button>
-              <button
-                onclick="loadContent('{{ url_for('admin.manage_subjects') }}')"
-                class="btn btn-success responsive-btn class-btn"
-              >
-                <i class="bi bi-list"></i> Manage Subjects
-              </button>
-              <button
-                onclick="loadContent('{{ url_for('admin.create_stream') }}')"
-                class="btn btn-success responsive-btn class-btn"
-              >
-                <i class="bi bi-plus-circle"></i> Create Stream
-              </button>
-              <button
-                onclick="loadContent('{{ url_for('admin.manage_streams') }}')"
-                class="btn btn-success responsive-btn class-btn"
-              >
-                <i class="bi bi-list"></i> Manage Streams
-              </button>
-              <button
-                onclick="loadContent('{{ url_for('admin.assign_teachers') }}')"
-                class="btn btn-success responsive-btn class-btn"
-              >
-                <i class="bi bi-person-check"></i> Assign Teachers
-              </button>
-              <button
-                onclick="loadContent('{{ url_for('admin.manage_assignments') }}')"
-                class="btn btn-success responsive-btn class-btn"
-              >
-                <i class="bi bi-gear"></i> Manage Assignments
-              </button>
-            </div>
-            <div
-              style="
-                display: none;
-                position: absolute;
-                left: 50%;
-                top: 50%;
-                transform: translate(-50%, -50%);
-                flex-direction: column;
-                align-items: center;
-                justify-content: flex-start;
-                z-index: 1000;
-                gap: 3px;
-              "
-              id="academic-buttons"
-            >
-              <button
-                onclick="loadContent('{{ url_for('admin.create_academic_year') }}')"
-                class="btn btn-success responsive-btn class-btn"
-              >
-                <i class="bi bi-calendar-plus"></i> Create Academic Year
-              </button>
-              <button
-                onclick="loadContent('{{ url_for('admin.manage_academic_years') }}')"
-                class="btn btn-success responsive-btn class-btn"
-              >
-                <i class="bi bi-calendar-check"></i> Manage Academic Years
-              </button>
-              <button
-                onclick="loadContent('{{ url_for('admin.create_term') }}')"
-                class="btn btn-success responsive-btn class-btn"
-              >
-                <i class="bi bi-calendar-week"></i> Create Term
-              </button>
-              <button
-                onclick="loadContent('{{ url_for('admin.manage_terms') }}')"
-                class="btn btn-success responsive-btn class-btn"
-              >
-                <i class="bi bi-calendar-range"></i> Manage Terms
-              </button>
-              <button
-                onclick="loadContent('{{ url_for('admin.create_exam_schedule') }}')"
-                class="btn btn-success responsive-btn class-btn"
-              >
-                <i class="bi bi-calendar-event"></i> Create Exam Schedule
-              </button>
-              <button
-                onclick="loadContent('{{ url_for('admin.manage_exam_schedules') }}')"
-                class="btn btn-success responsive-btn class-btn"
-              >
-                <i class="bi bi-calendar-x"></i> Manage Exam Schedules
-              </button>
-              <button
-                onclick="loadContent('{{ url_for('admin.set_current_term_year') }}')"
-                class="btn btn-success responsive-btn class-btn"
-              >
-                <i class="bi bi-calendar-check"></i> Set Current Term & Academic
-                Year
-              </button>
-            </div>
-            <div
-              style="
-                display: none;
-                position: absolute;
-                left: 50%;
-                top: 50%;
-                transform: translate(-50%, -50%);
-                flex-direction: column;
-                align-items: center;
-                justify-content: flex-start;
-                z-index: 1000;
-                gap: 3px;
-              "
-              id="notification-buttons"
-            >
-              <button
-                onclick="loadContent('{{ url_for('admin.create_notification') }}')"
-                class="btn btn-success responsive-btn class-btn"
-              >
-                <i class="bi bi-bell-plus"></i> Create Notification
-              </button>
-              <button
-                onclick="loadContent('{{ url_for('admin.manage_notifications') }}')"
-                class="btn btn-success responsive-btn class-btn"
-              >
-                <i class="bi bi-bell-fill"></i> Manage Notifications
-              </button>
-            </div>
-            <div id="main-content" style="margin-top: 10px"></div>
+            ></div>
             <div
               id="loading-indicator"
               style="
@@ -521,29 +529,30 @@
         const mainContent = document.getElementById("main-content");
         const loading = document.getElementById("loading-indicator");
         if (loading) loading.style.display = "block";
-        fetch(url)
+        fetch(url, {
+          headers: {
+            "X-Requested-With": "XMLHttpRequest",
+          },
+        })
           .then((response) => response.text())
           .then((html) => {
             mainContent.innerHTML = html;
             const footer = mainContent.querySelector("footer");
             if (footer) footer.remove();
+            // Initialize dynamic elements
+            window.capitalizeUsername();
+            window.setupFormValidation();
+            // Attach toggle password event
+            const toggleBtn = document.getElementById("togglePassword");
+            if (toggleBtn) {
+              toggleBtn.addEventListener("click", window.togglePassword);
+            }
             if (loading) loading.style.display = "none";
           })
           .catch((error) => {
             console.error("Error loading content:", error);
             if (loading) loading.style.display = "none";
           });
-        const staffButtons = document.getElementById("staff-buttons");
-        if (staffButtons)
-          staffButtons.style.setProperty("display", "none", "important");
-        const classButtons = document.getElementById("class-buttons");
-        if (classButtons) classButtons.style.display = "none";
-        const academicButtons = document.getElementById("academic-buttons");
-        if (academicButtons) academicButtons.style.display = "none";
-        const notificationButtons = document.getElementById(
-          "notification-buttons"
-        );
-        if (notificationButtons) notificationButtons.style.display = "none";
         // Keep sidebar visible
         const sidebar = document.getElementById("sidebar");
         if (sidebar) sidebar.style.display = "block";
@@ -553,23 +562,382 @@
       function showDashboard() {
         const mainContent = document.getElementById("main-content");
         if (mainContent) mainContent.innerHTML = "";
-        const staffButtons = document.getElementById("staff-buttons");
-        if (staffButtons)
-          staffButtons.style.setProperty("display", "none", "important");
-        const classButtons = document.getElementById("class-buttons");
-        if (classButtons) classButtons.style.display = "none";
-        const academicButtons = document.getElementById("academic-buttons");
-        if (academicButtons) academicButtons.style.display = "none";
-        const notificationButtons = document.getElementById(
-          "notification-buttons"
-        );
-        if (notificationButtons) notificationButtons.style.display = "none";
         // Show sidebar back
         const sidebar = document.getElementById("sidebar");
         if (sidebar) sidebar.style.display = "block";
         const showBtn = document.getElementById("showBtn");
         if (showBtn) showBtn.style.display = "none";
       }
+      // Hide flash message after 2 seconds
+      setTimeout(() => {
+        const flash = document.getElementById("flash-message");
+        if (flash) flash.style.display = "none";
+      }, 2000);
+
+      window.editRow = function (id) {
+        // Hide display spans and show inputs/selects
+        document.getElementById(`title-display-${id}`).classList.add("d-none");
+        document.getElementById(`title-input-${id}`).classList.remove("d-none");
+        document
+          .getElementById(`message-display-${id}`)
+          .classList.add("d-none");
+        document
+          .getElementById(`message-input-${id}`)
+          .classList.remove("d-none");
+        document
+          .getElementById(`visibility-display-${id}`)
+          .classList.add("d-none");
+        document
+          .getElementById(`visibility-input-${id}`)
+          .classList.remove("d-none");
+
+        // Hide edit button, show save and cancel buttons
+        document.getElementById(`edit-btn-${id}`).classList.add("d-none");
+        document.getElementById(`save-btn-${id}`).classList.remove("d-none");
+        document.getElementById(`cancel-btn-${id}`).classList.remove("d-none");
+      };
+
+      window.cancelEdit = function (id) {
+        // Show display spans and hide inputs/selects
+        document
+          .getElementById(`title-display-${id}`)
+          .classList.remove("d-none");
+        document.getElementById(`title-input-${id}`).classList.add("d-none");
+        document
+          .getElementById(`message-display-${id}`)
+          .classList.remove("d-none");
+        document.getElementById(`message-input-${id}`).classList.add("d-none");
+        document
+          .getElementById(`visibility-display-${id}`)
+          .classList.remove("d-none");
+        document
+          .getElementById(`visibility-input-${id}`)
+          .classList.add("d-none");
+
+        // Show edit button, hide save and cancel buttons
+        document.getElementById(`edit-btn-${id}`).classList.remove("d-none");
+        document.getElementById(`save-btn-${id}`).classList.add("d-none");
+        document.getElementById(`cancel-btn-${id}`).classList.add("d-none");
+      };
+
+      window.saveRow = function (id) {
+        // Get values from inputs/selects
+        const title = document.getElementById(`title-input-${id}`).value;
+        const message = document.getElementById(`message-input-${id}`).value;
+        const visibility = document.getElementById(
+          `visibility-input-${id}`
+        ).value;
+
+        // Create a form and submit to refresh the page
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = "/admin/manage_notifications";
+        form.style.display = "none";
+        form.innerHTML = `
+          <input name="notification_id" value="${id}">
+          <input name="title" value="${title}">
+          <input name="message" value="${message}">
+          <input name="visibility" value="${visibility}">
+        `;
+        document.body.appendChild(form);
+        form.submit();
+      };
+
+      window.deleteRow = function (id) {
+        window.currentDeleteId = id;
+        const modal = new bootstrap.Modal(
+          document.getElementById("deleteModal")
+        );
+        modal.show();
+      };
+
+      window.confirmDelete = function () {
+        // Check if this is a notification delete (has deleteModal)
+        const modalElement = document.getElementById("deleteModal");
+        if (modalElement) {
+          const modal = bootstrap.Modal.getInstance(modalElement);
+          if (modal) modal.hide();
+          const id = window.currentDeleteId;
+          fetch(`/admin/delete_notification/${id}`, {
+            method: "POST",
+            headers: {
+              "X-Requested-With": "XMLHttpRequest",
+            },
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              // Clear existing flash
+              const existingFlash = document.getElementById("flash-message");
+              if (existingFlash) existingFlash.remove();
+
+              const msgDiv = document.createElement("div");
+              msgDiv.id = "flash-message";
+              msgDiv.className = data.success
+                ? "alert alert-success"
+                : "alert alert-danger";
+              msgDiv.textContent = data.message;
+              document
+                .querySelector(".card-body")
+              .insertBefore(
+                msgDiv,
+                document.querySelector(".card-body").firstChild
+              );
+
+            if (data.success) {
+              // Remove the row
+              document.getElementById(`row-${id}`).remove();
+              setTimeout(() => {
+                msgDiv.remove();
+              }, 2000);
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+        } else {
+          // This is not a notification delete, management pages handle their own deletion
+          console.log("confirmDelete called but no deleteModal found - assuming management page handles deletion");
+        }
+      };
+
+      // Management page delete functions
+      window.confirmDeleteClass = function() {
+        console.log("confirmDeleteClass called, currentDeleteId:", window.currentDeleteId);
+        if (window.currentDeleteId) {
+          console.log("Creating form for deletion");
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = `/admin/delete_class/${window.currentDeleteId}`;
+          console.log("Form action:", form.action);
+          document.body.appendChild(form);
+          
+          // Close the modal before submitting
+          const modal = bootstrap.Modal.getInstance(document.getElementById('deleteClassModal'));
+          if (modal) {
+            modal.hide();
+          }
+          
+          console.log("Submitting form");
+          form.submit();
+        } else {
+          console.log("No currentDeleteId found");
+        }
+      };
+
+      window.confirmDeleteStream = function() {
+        if (window.currentDeleteId) {
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = `/admin/delete_stream/${window.currentDeleteId}`;
+          document.body.appendChild(form);
+          
+          // Close the modal
+          const modal = bootstrap.Modal.getInstance(document.getElementById('deleteStreamModal'));
+          if (modal) modal.hide();
+          
+          form.submit();
+        }
+      };
+
+      window.confirmDeleteSubject = function() {
+        if (window.currentDeleteId) {
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = `/admin/delete_subject/${window.currentDeleteId}`;
+          document.body.appendChild(form);
+          
+          // Close the modal
+          const modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
+          if (modal) modal.hide();
+          
+          form.submit();
+        }
+      };
+
+      window.confirmDeleteTerm = function() {
+        if (window.currentDeleteId) {
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = `/admin/delete_term/${window.currentDeleteId}`;
+          document.body.appendChild(form);
+          
+          // Close the modal
+          const modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
+          if (modal) modal.hide();
+          
+          form.submit();
+        }
+      };
+
+      window.confirmDeleteAcademicYear = function() {
+        if (window.currentDeleteId) {
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = `/admin/delete_academic_year/${window.currentDeleteId}`;
+          document.body.appendChild(form);
+          
+          // Close the modal
+          const modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
+          if (modal) modal.hide();
+          
+          form.submit();
+        }
+      };
+
+      window.confirmDeleteAssignment = function() {
+        if (window.currentDeleteId) {
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = `/admin/delete_assignment/${window.currentDeleteId}`;
+          document.body.appendChild(form);
+          form.submit();
+        }
+      };
+
+      window.confirmDeleteUser = function() {
+        if (window.currentDeleteId) {
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = `/admin/delete_user/${window.currentDeleteId}`;
+          document.body.appendChild(form);
+          form.submit();
+        }
+      };
+
+      // Password toggle function
+      window.togglePassword = function () {
+        const passwordInput = document.getElementById("password");
+        const toggleBtn = document.getElementById("togglePassword");
+        if (passwordInput && toggleBtn) {
+          const icon = toggleBtn.querySelector("i");
+          if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            if (icon) {
+              icon.classList.remove("bi-eye");
+              icon.classList.add("bi-eye-slash");
+            }
+          } else {
+            passwordInput.type = "password";
+            if (icon) {
+              icon.classList.remove("bi-eye-slash");
+              icon.classList.add("bi-eye");
+            }
+          }
+        }
+      };
+
+      // Username capitalization function
+      window.capitalizeUsername = function () {
+        const usernameInput = document.getElementById("username");
+        if (usernameInput) {
+          usernameInput.addEventListener("input", function () {
+            this.value =
+              this.value.charAt(0).toUpperCase() +
+              this.value.slice(1).toLowerCase();
+          });
+        }
+      };
+
+      // Form validation function
+      window.setupFormValidation = function () {
+        const form = document.getElementById("createStaffForm");
+        if (form) {
+          form.addEventListener("submit", function (event) {
+            const password = document.getElementById("password").value;
+            const warning = document.getElementById("passwordWarning");
+            const minLength = 8; // Default, or get from template if needed
+
+            if (password && password.length < minLength) {
+              event.preventDefault(); // Prevent form submission
+              if (warning) {
+                warning.textContent = `Password must be at least ${minLength} characters long.`;
+                warning.style.display = "block";
+              }
+              document.getElementById("password").focus();
+            } else {
+              if (warning) warning.style.display = "none";
+            }
+          });
+        }
+      };
+
+      // User management functions
+      window.editRow = function (btn) {
+        const row = btn.closest("tr");
+        const inputs = row.querySelectorAll(".editable");
+        inputs.forEach((input) => {
+          input.removeAttribute("readonly");
+          input.removeAttribute("disabled");
+        });
+        btn.style.display = "none";
+        row.querySelector(".save-btn").style.display = "inline-block";
+      };
+
+      window.saveRow = function (btn) {
+        const row = btn.closest("tr");
+        const userId = row.dataset.userId;
+        const username = row.querySelector('input[type="text"]').value;
+        const email = row.querySelector('input[type="email"]').value;
+        const password = row.querySelector('input[type="password"]').value;
+        const roleId = row.querySelector("select").value;
+
+        // Password validation
+        const minLength = 8;
+        if (password && password.length < minLength) {
+          const warning = document.getElementById("passwordWarning");
+          if (warning) {
+            warning.textContent = `Password must be at least ${minLength} characters long.`;
+            warning.style.display = "block";
+          }
+          row.querySelector('input[type="password"]').focus();
+          return;
+        } else {
+          const warning = document.getElementById("passwordWarning");
+          if (warning) warning.style.display = "none";
+        }
+
+        // Create form and submit
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = "/admin/manage_users";
+
+        const fields = [
+          { name: "user_id", value: userId },
+          { name: "username", value: username },
+          { name: "email", value: email },
+          { name: "password", value: password },
+          { name: "role_id", value: roleId },
+        ];
+
+        fields.forEach((field) => {
+          const input = document.createElement("input");
+          input.type = "hidden";
+          input.name = field.name;
+          input.value = field.value;
+          form.appendChild(input);
+        });
+
+        document.body.appendChild(form);
+        form.submit();
+      };
+
+      window.showDeleteModal = function (userId) {
+        const modal = new bootstrap.Modal(
+          document.getElementById("deleteUserModal")
+        );
+        const deleteForm = document.getElementById("deleteUserForm");
+        if (deleteForm) {
+          deleteForm.action = `/admin/delete_user/${userId}`;
+        }
+        modal.show();
+      };
+
+      // Global function for setting delete form actions in AJAX-loaded content
+      window.setDeleteAction = function (id) {
+        // This function will be overridden by local functions in each template
+        // but provides a fallback
+        console.log("setDeleteAction called with id:", id);
+      };
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     {% include 'footer.html' %}

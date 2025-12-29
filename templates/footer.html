@@ -11,7 +11,17 @@
     z-index: 1000;
   "
 >
-  <p class="mb-0 text-muted">
+  <style>
+    .footer-text {
+      font-size: 0.8em;
+    }
+    @media (max-width: 768px) {
+      .footer-text {
+        font-size: 0.7em;
+      }
+    }
+  </style>
+  <p class="mb-0 text-muted footer-text">
     Version 1.0 | Copyright © 2025 | Developed and maintained by
     <a href="/developer" class="text-primary fw-bold"
       >Sejj Technologies(U)Ltd.</a

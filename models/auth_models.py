@@ -15,6 +15,7 @@ class Role(db.Model):
 class SystemUser(db.Model):
     __tablename__ = 'system_users'
     id = db.Column(db.Integer, primary_key=True)
+    display_id = db.Column(db.Integer, unique=True, nullable=False)
     username = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)

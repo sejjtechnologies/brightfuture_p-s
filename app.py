@@ -75,6 +75,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_pre_ping': True, 'pool_recycle': 300}
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 # Custom Jinja2 filter for East African time formatting
 @app.template_filter('eat_time')
@@ -220,7 +221,10 @@ def secretary():
         )
     )
 
-    return render_template('secretary/dashboard.html', notifications=notifications, unread_count=unread_count)
+    # Get term progress info
+    term_progress = get_term_progress_info()
+
+    return render_template('secretary/dashboard.html', notifications=notifications, term_progress=term_progress, unread_count=unread_count)
 
 @app.route('/bursar')
 def bursar():
