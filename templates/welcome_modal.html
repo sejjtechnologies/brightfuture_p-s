@@ -1,0 +1,114 @@
+<!-- Welcome Modal -->
+<div
+  class="modal fade"
+  id="welcomeModal"
+  tabindex="-1"
+  aria-labelledby="welcomeModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 10px">
+      <!-- Modal Body -->
+      <div class="modal-body text-center px-5 py-3">
+        <!-- Logo -->
+        <img
+          src="{{ url_for('static', filename='logo.png') }}"
+          alt="Logo"
+          class="mb-3"
+          style="max-width: 120px"
+        />
+
+        <!-- Title -->
+        <h3 class="fw-bold mb-2" id="welcomeModalLabel">
+          {{ school_name }} Management System
+        </h3>
+
+        <!-- Version -->
+        <p class="text-muted mb-3">Version : {{ version }}</p>
+
+        <!-- Contact Info -->
+        <p class="mb-1"><strong>Contact Us :</strong></p>
+        <p class="mb-1">+256 744 137 174</p>
+        <p class="mb-1">+256 768 936 641</p>
+        <p class="mb-3">
+          <a
+            href="mailto:sejjtechnologies@gmail.com"
+            class="text-success text-decoration-none"
+            >sejjtechnologies@gmail.com</a
+          >
+        </p>
+
+        <!-- Developer Info -->
+        <p class="mb-0 text-muted small">
+          © Developed &amp; Maintained By
+          <a
+            href="/developer"
+            class="text-primary fw-bold text-decoration-none"
+          >
+            Sejj Technologies(U)Ltd.
+          </a>
+        </p>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer border-0 px-5 pb-4">
+        <button
+          type="button"
+          class="btn w-100 text-white fw-bold"
+          data-bs-dismiss="modal"
+          style="
+            background-color: #28a745;
+            border-radius: 6px;
+            padding: 12px;
+            font-size: 1.1rem;
+          "
+        >
+          Okay
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Function to show welcome modal
+  function showWelcomeModal() {
+    console.log("Attempting to show welcome modal");
+    if (
+      typeof bootstrap !== "undefined" &&
+      typeof bootstrap.Modal !== "undefined"
+    ) {
+      console.log("Bootstrap available, showing modal");
+      var welcomeModal = new bootstrap.Modal(
+        document.getElementById("welcomeModal"),
+        {
+          backdrop: "static",
+          keyboard: false,
+        }
+      );
+      welcomeModal.show();
+      console.log("Modal show called");
+
+      document
+        .getElementById("welcomeModal")
+        .addEventListener("hidden.bs.modal", function () {
+          localStorage.setItem("welcomeModalDismissed", "true");
+          console.log("Modal dismissed");
+        });
+    } else {
+      console.log("Bootstrap not available, retrying in 100ms");
+      setTimeout(showWelcomeModal, 100);
+    }
+  }
+
+  // Wait for DOM and then Bootstrap
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", function () {
+      console.log("DOM loaded, waiting for Bootstrap");
+      setTimeout(showWelcomeModal, 50);
+    });
+  } else {
+    console.log("DOM already loaded, waiting for Bootstrap");
+    setTimeout(showWelcomeModal, 50);
+  }
+</script>

@@ -141,6 +141,11 @@ from routes.auth_routes import auth_bp
 from routes.admin_routes import admin_bp
 from routes.secretary_routes import secretary_bp
 from routes.parent_routes import parent_bp
+
+@app.context_processor
+def inject_version():
+    return {'version': '1.1.2'}
+
 app.register_blueprint(auth_bp)
 app.register_blueprint(admin_bp)
 app.register_blueprint(secretary_bp)

@@ -27,7 +27,16 @@ def dashboard():
     # Get term progress information
     term_progress = get_term_progress_info()
 
-    return render_template('parent/dashboard.html', term_progress=term_progress)
+    # Get settings for welcome modal
+    from models.admin_models import SystemSetting
+    school_name_setting = SystemSetting.query.filter_by(key='school_name').first()
+    contact_phone_setting = SystemSetting.query.filter_by(key='contact_phone').first()
+    contact_email_setting = SystemSetting.query.filter_by(key='contact_email').first()
+    school_name = school_name_setting.value if school_name_setting and school_name_setting.value else 'Bright Future P.S'
+    contact_phone = contact_phone_setting.value if contact_phone_setting and contact_phone_setting.value else '+256786210221'
+    contact_email = contact_email_setting.value if contact_email_setting and contact_email_setting.value else 'mutaniktechnologies@gmail.com'
+
+    return render_template('parent/dashboard.html', term_progress=term_progress, school_name=school_name, contact_phone=contact_phone, contact_email=contact_email)
 
 @parent_bp.route('/search_pupils', methods=['POST'])
 def search_pupils():
