@@ -51,10 +51,13 @@
         background: rgba(255, 255, 255, 0.2);
       }
       .sidebar-subitem {
+        display: flex;
+        align-items: center;
         cursor: pointer;
-        padding: 3px 20px;
+        padding: 3px 10px 3px 5px;
         color: white;
         font-size: 0.75em;
+        white-space: nowrap;
       }
       .sidebar-subitem:hover {
         background: rgba(255, 255, 255, 0.2);
@@ -69,9 +72,6 @@
       .sidebar-item.vertical-icon i {
         font-size: 1.5em;
       }
-      .sidebar-subitem.vertical-icon i {
-        font-size: 1.2em;
-      }
       @media (max-width: 767px) {
         .sidebar-item {
           font-size: 0.6em;
@@ -79,7 +79,8 @@
         }
         .sidebar-subitem {
           font-size: 0.65em;
-          padding: 2px 15px;
+          padding: 2px 10px 2px 5px;
+          white-space: nowrap;
         }
       }
       @media (min-width: 768px) {
@@ -104,7 +105,7 @@
             z-index: 1000;
             overflow-y: auto;
             overflow-x: hidden;
-            width: 200px !important;
+            width: 205px !important;
           "
         >
           <button
@@ -113,7 +114,7 @@
             onclick="hideSidebar()"
           ></button>
           <div class="d-flex flex14column h-100">
-            <div style="padding-top: 60px; padding-bottom: 60px">
+            <div style="padding-top: 30px; padding-bottom: 30px">
               <div
                 class="d-flex flex-column align-items-start"
                 style="gap: 0.5rem; padding-left: 10px"
@@ -124,183 +125,205 @@
                 >
                   <i
                     class="bi bi-house"
-                    style="color: white; font-size: 2em"
+                    style="color: #28a745; font-size: 2em"
                   ></i>
                   <span>Dashboard</span>
                 </div>
                 <div class="sidebar-section">
                   <div class="sidebar-item vertical-icon">
-                    <i class="bi bi-person-badge" style="color: white"></i>
+                    <i class="bi bi-person-badge" style="color: #007bff"></i>
                     <span>Staff & Role Management</span>
                   </div>
                   <div
-                    class="sidebar-subitem vertical-icon"
+                    class="sidebar-subitem"
                     onclick="loadContent('{{ url_for('admin.create_staff') }}')"
                   >
-                    <i class="bi bi-person-plus" style="color: black"></i>
-                    <span>Create Staff</span>
+                    <i
+                      class="bi bi-person-plus me-2"
+                      style="color: #28a745"
+                    ></i>
+                    Create Staff
                   </div>
                   <div
-                    class="sidebar-subitem vertical-icon"
+                    class="sidebar-subitem"
                     onclick="loadContent('{{ url_for('admin.manage_users') }}')"
                   >
-                    <i class="bi bi-people" style="color: black"></i>
-                    <span>Manage Users</span>
+                    <i class="bi bi-people me-2" style="color: #28a745"></i>
+                    Manage Users
                   </div>
                 </div>
                 <div class="sidebar-section">
                   <div class="sidebar-item vertical-icon">
-                    <i class="bi bi-journal" style="color: white"></i>
+                    <i class="bi bi-journal" style="color: #28a745"></i>
                     <span>Academic Setup & Assignments</span>
                   </div>
                   <div
-                    class="sidebar-subitem vertical-icon"
+                    class="sidebar-subitem"
                     onclick="loadContent('{{ url_for('admin.create_class') }}')"
                   >
-                    <i class="bi bi-plus-circle" style="color: black"></i>
-                    <span>Create Class</span>
+                    <i class="bi bi-book me-2" style="color: #28a745"></i>
+                    Create Class
                   </div>
                   <div
-                    class="sidebar-subitem vertical-icon"
+                    class="sidebar-subitem"
                     onclick="loadContent('{{ url_for('admin.manage_classes') }}')"
                   >
-                    <i class="bi bi-list" style="color: black"></i>
-                    <span>Manage Classes</span>
+                    <i class="bi bi-list me-2" style="color: #28a745"></i>
+                    Manage Classes
                   </div>
                   <div
-                    class="sidebar-subitem vertical-icon"
+                    class="sidebar-subitem"
                     onclick="loadContent('{{ url_for('admin.create_subject') }}')"
                   >
-                    <i class="bi bi-plus-circle" style="color: black"></i>
-                    <span>Create Subject</span>
+                    <i
+                      class="bi bi-file-earmark-plus me-2"
+                      style="color: #28a745"
+                    ></i>
+                    Create Subject
                   </div>
                   <div
-                    class="sidebar-subitem vertical-icon"
+                    class="sidebar-subitem"
                     onclick="loadContent('{{ url_for('admin.manage_subjects') }}')"
                   >
-                    <i class="bi bi-list" style="color: black"></i>
-                    <span>Manage Subjects</span>
+                    <i class="bi bi-list me-2" style="color: #28a745"></i>
+                    Manage Subjects
                   </div>
                   <div
-                    class="sidebar-subitem vertical-icon"
+                    class="sidebar-subitem"
                     onclick="loadContent('{{ url_for('admin.create_stream') }}')"
                   >
-                    <i class="bi bi-plus-circle" style="color: black"></i>
-                    <span>Create Stream</span>
+                    <i class="bi bi-diagram-3 me-2" style="color: #28a745"></i>
+                    Create Stream
                   </div>
                   <div
-                    class="sidebar-subitem vertical-icon"
+                    class="sidebar-subitem"
                     onclick="loadContent('{{ url_for('admin.manage_streams') }}')"
                   >
-                    <i class="bi bi-list" style="color: black"></i>
-                    <span>Manage Streams</span>
+                    <i class="bi bi-list me-2" style="color: #28a745"></i>
+                    Manage Streams
                   </div>
                   <div
-                    class="sidebar-subitem vertical-icon"
+                    class="sidebar-subitem"
                     onclick="loadContent('{{ url_for('admin.assign_teachers') }}')"
                   >
-                    <i class="bi bi-person-check" style="color: black"></i>
-                    <span>Assign Teachers</span>
+                    <i
+                      class="bi bi-person-check me-2"
+                      style="color: #28a745"
+                    ></i>
+                    Assign Teachers
                   </div>
                   <div
-                    class="sidebar-subitem vertical-icon"
+                    class="sidebar-subitem"
                     onclick="loadContent('{{ url_for('admin.manage_assignments') }}')"
                   >
-                    <i class="bi bi-gear" style="color: black"></i>
-                    <span>Manage Assignments</span>
+                    <i class="bi bi-gear me-2" style="color: #28a745"></i>
+                    Manage Assignments
                   </div>
                 </div>
                 <div class="sidebar-section">
                   <div class="sidebar-item vertical-icon">
-                    <i class="bi bi-calendar-week" style="color: white"></i>
+                    <i class="bi bi-calendar-week" style="color: #fd7e14"></i>
                     <span>Academic Management</span>
                   </div>
                   <div
-                    class="sidebar-subitem vertical-icon"
+                    class="sidebar-subitem"
                     onclick="loadContent('{{ url_for('admin.create_academic_year') }}')"
                   >
-                    <i class="bi bi-plus-circle" style="color: black"></i>
-                    <span>Create Academic Year</span>
+                    <i
+                      class="bi bi-calendar-plus me-2"
+                      style="color: #28a745"
+                    ></i>
+                    Create Academic Year
                   </div>
                   <div
-                    class="sidebar-subitem vertical-icon"
+                    class="sidebar-subitem"
                     onclick="loadContent('{{ url_for('admin.manage_academic_years') }}')"
                   >
-                    <i class="bi bi-list" style="color: black"></i>
-                    <span>Manage Academic Years</span>
+                    <i class="bi bi-list me-2" style="color: #28a745"></i>
+                    Manage Academic Years
                   </div>
                   <div
-                    class="sidebar-subitem vertical-icon"
+                    class="sidebar-subitem"
                     onclick="loadContent('{{ url_for('admin.create_term') }}')"
                   >
-                    <i class="bi bi-plus-circle" style="color: black"></i>
-                    <span>Create Term</span>
+                    <i
+                      class="bi bi-calendar2-plus me-2"
+                      style="color: #28a745"
+                    ></i>
+                    Create Term
                   </div>
                   <div
-                    class="sidebar-subitem vertical-icon"
+                    class="sidebar-subitem"
                     onclick="loadContent('{{ url_for('admin.manage_terms') }}')"
                   >
-                    <i class="bi bi-list" style="color: black"></i>
-                    <span>Manage Terms</span>
+                    <i class="bi bi-list me-2" style="color: #28a745"></i>
+                    Manage Terms
                   </div>
                   <div
-                    class="sidebar-subitem vertical-icon"
+                    class="sidebar-subitem"
                     onclick="loadContent('{{ url_for('admin.set_current_term_year') }}')"
                   >
-                    <i class="bi bi-gear" style="color: black"></i>
-                    <span>Set Current Term Year</span>
+                    <i class="bi bi-gear me-2" style="color: #28a745"></i>
+                    Set Current Term Year
                   </div>
                 </div>
                 <div class="sidebar-section">
                   <div class="sidebar-item vertical-icon">
-                    <i class="bi bi-clipboard-data" style="color: white"></i>
+                    <i class="bi bi-clipboard-data" style="color: #dc3545"></i>
                     <span>Exam Management</span>
                   </div>
                   <div
-                    class="sidebar-subitem vertical-icon"
+                    class="sidebar-subitem"
                     onclick="loadContent('{{ url_for('admin.create_exam_schedule') }}')"
                   >
-                    <i class="bi bi-plus-circle" style="color: black"></i>
-                    <span>Create Exam Schedule</span>
+                    <i
+                      class="bi bi-calendar-event me-2"
+                      style="color: #28a745"
+                    ></i>
+                    Create Exam Schedule
                   </div>
                   <div
-                    class="sidebar-subitem vertical-icon"
+                    class="sidebar-subitem"
                     onclick="loadContent('{{ url_for('admin.manage_exam_schedules') }}')"
                   >
-                    <i class="bi bi-list" style="color: black"></i>
-                    <span>Manage Exam Schedules</span>
+                    <i class="bi bi-list me-2" style="color: #28a745"></i>
+                    Manage Exam Schedules
                   </div>
                 </div>
                 <div class="sidebar-section">
                   <div class="sidebar-item vertical-icon">
-                    <i class="bi bi-bell-fill" style="color: white"></i>
+                    <i class="bi bi-bell-fill" style="color: #6f42c1"></i>
                     <span>Notifications</span>
                   </div>
                   <div
-                    class="sidebar-subitem vertical-icon"
+                    class="sidebar-subitem"
                     onclick="loadContent('{{ url_for('admin.create_notification') }}')"
                   >
-                    <i class="bi bi-plus-circle" style="color: black"></i>
-                    <span>Create Notification</span>
+                    <i
+                      class="bi bi-plus-circle me-2"
+                      style="color: #28a745"
+                    ></i>
+                    Create Notification
                   </div>
                   <div
-                    class="sidebar-subitem vertical-icon"
+                    class="sidebar-subitem"
                     onclick="loadContent('{{ url_for('admin.manage_notifications') }}')"
                   >
-                    <i class="bi bi-list" style="color: black"></i>
-                    <span>Manage Notifications</span>
+                    <i class="bi bi-list me-2" style="color: #28a745"></i>
+                    Manage Notifications
                   </div>
                 </div>
                 <div
-                  class="sidebar-item vertical-icon"
+                  class="sidebar-item"
                   onclick="loadContent('{{ url_for('admin.system_settings') }}')"
+                  style="text-transform: none"
                 >
-                  <i class="bi bi-gear-fill" style="color: black"></i>
-                  <span>System settings</span>
+                  <i class="bi bi-gear-fill me-2" style="color: white"></i>
+                  System settings
                 </div>
-                <div class="sidebar-item vertical-icon">
-                  <i class="bi bi-bar-chart-fill" style="color: black"></i>
-                  <span>School-Wide Reporting</span>
+                <div class="sidebar-item" style="text-transform: none">
+                  <i class="bi bi-bar-chart-fill me-2" style="color: white"></i>
+                  School-wide reporting
                 </div>
               </div>
             </div>
@@ -312,7 +335,7 @@
             position: relative;
             min-height: 100vh;
             padding-bottom: 80px;
-            margin-left: 16.666667%;
+            margin-left: 205px;
             padding-top: 100px;
           "
         >
@@ -408,13 +431,15 @@
               id="main-content"
               style="
                 margin-top: 10px;
-                margin-left: 200px;
+                margin-left: 180px;
                 max-height: calc(100vh - 120px);
                 overflow-y: auto;
                 overflow-x: auto;
-                padding: 0 10px;
+                padding: 0 2px;
               "
-            ></div>
+            >
+              <h1 class="text-center mt-5">Dashboard</h1>
+            </div>
             <div
               id="loading-indicator"
               style="
@@ -583,7 +608,8 @@
       }
       function showDashboard() {
         const mainContent = document.getElementById("main-content");
-        if (mainContent) mainContent.innerHTML = "";
+        if (mainContent)
+          mainContent.innerHTML = "<h1 class='text-center mt-5'>Dashboard</h1>";
         // Show sidebar back
         const sidebar = document.getElementById("sidebar");
         if (sidebar) sidebar.style.display = "block";
@@ -940,8 +966,29 @@
           input.removeAttribute("readonly");
           input.removeAttribute("disabled");
         });
+        const toggleBtn = row.querySelector(".toggle-password");
+        if (toggleBtn) toggleBtn.style.display = "inline-block";
+        const passwordInput = row.querySelector(".password-container input");
+        const saveBtn = row.querySelector(".save-btn");
+        if (saveBtn) saveBtn.disabled = false; // Enable initially since password is empty (not tampered)
+        if (passwordInput) {
+          passwordInput.addEventListener("input", function () {
+            const warning = row.querySelector(".password-warning");
+            const saveBtn = row.querySelector(".save-btn");
+            if (this.value && this.value.length < 8) {
+              if (warning) {
+                warning.textContent = "Password must be at least 8 characters";
+                warning.style.display = "block";
+              }
+              if (saveBtn) saveBtn.disabled = true;
+            } else {
+              if (warning) warning.style.display = "none";
+              if (saveBtn) saveBtn.disabled = false;
+            }
+          });
+        }
         btn.style.display = "none";
-        row.querySelector(".save-btn").style.display = "inline-block";
+        if (saveBtn) saveBtn.style.display = "inline-block";
       };
 
       window.saveRow = function (btn) {
@@ -949,22 +996,21 @@
         const userId = row.dataset.userId;
         const username = row.querySelector('input[type="text"]').value;
         const email = row.querySelector('input[type="email"]').value;
-        const password = row.querySelector('input[type="password"]').value;
+        const password = row.querySelector(".password-container input").value;
         const roleId = row.querySelector("select").value;
 
         // Password validation
         const minLength = 8;
+        const passwordWarning = row.querySelector(".password-warning");
         if (password && password.length < minLength) {
-          const warning = document.getElementById("passwordWarning");
-          if (warning) {
-            warning.textContent = `Password must be at least ${minLength} characters long.`;
-            warning.style.display = "block";
+          if (passwordWarning) {
+            passwordWarning.textContent = `Password must be at least ${minLength} characters long.`;
+            passwordWarning.style.display = "block";
           }
-          row.querySelector('input[type="password"]').focus();
+          row.querySelector(".password-container input").focus();
           return;
         } else {
-          const warning = document.getElementById("passwordWarning");
-          if (warning) warning.style.display = "none";
+          if (passwordWarning) passwordWarning.style.display = "none";
         }
 
         // Create form and submit
@@ -1009,6 +1055,20 @@
         // but provides a fallback
         console.log("setDeleteAction called with id:", id);
         window.currentDeleteId = id;
+      };
+
+      window.togglePassword = function (btn) {
+        const container = btn.closest(".password-container");
+        const input = container.querySelector(
+          'input[type="password"], input[type="text"]'
+        );
+        if (input.type === "password") {
+          input.type = "text";
+          btn.textContent = "Hide";
+        } else {
+          input.type = "password";
+          btn.textContent = "Show";
+        }
       };
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
