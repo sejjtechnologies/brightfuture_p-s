@@ -58,6 +58,14 @@
       .sidebar-subitem:hover {
         background: rgba(255, 255, 255, 0.2);
       }
+      .disabled-sidebar-item {
+        opacity: 0.5;
+        cursor: not-allowed !important;
+        pointer-events: auto;
+      }
+      .disabled-sidebar-item:hover {
+        background: rgba(255, 0, 0, 0.1) !important;
+      }
       @media (max-width: 767px) {
         .sidebar-item {
           font-size: 0.65em;
@@ -74,6 +82,15 @@
           padding: 0.2rem 0.4rem;
         }
       }
+      
+      /* Main content area styling */
+      #main-content {
+        margin-top: 120px;
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        min-height: calc(100vh - 200px);
+      }
     </style>
   </head>
   <body>
@@ -83,13 +100,14 @@
           id="sidebar"
           class="col-12 col-md-2 bg-primary"
           style="
-            height: calc(100vh - 60px);
+            height: 100vh;
             background-color: #00008b !important;
             position: fixed;
             padding-top: 2px;
-            z-index: 1000;
+            z-index: 1001;
             overflow-y: auto;
-            width: 15%;
+            overflow-x: hidden;
+            width: 190px !important;
           "
         >
           <button
@@ -101,25 +119,118 @@
             class="d-flex flex-column align-items-start"
             style="gap: 0.5rem; padding-left: 10px; padding-top: 20px;"
           >
+            <!-- Dashboard Home -->
             <div
-              class="sidebar-item"
+              class="sidebar-item d-flex flex-column align-items-center text-center"
               onclick="loadContent('/teacher/')"
+              style="padding: 8px; border-radius: 6px;"
             >
-              <i class="bi bi-house me-2" style="color: black"></i>
-              Dashboard
+              <i class="bi bi-house" style="color: white; font-size: 1.5em; margin-bottom: 4px;"></i>
+              <span style="font-size: 0.75em;">Dashboard</span>
+            </div>
+
+            <!-- Academic & Classroom Management Section -->
+            <div class="sidebar-section">
+              <div class="sidebar-item" style="font-weight: bold; color: #ffff00; cursor: default;">
+                <i class="bi bi-book me-2" style="color: #ff6b35"></i>
+                Academic & Classroom Management
+              </div>
+              <hr style="border: 1px solid white; margin: 8px 0; opacity: 0.8;">
+              <div class="sidebar-subitem" onclick="loadContent('/teacher/enter-marks')">
+                <i class="bi bi-pencil-square me-2"></i>
+                Enter Marks
+              </div>
+              <div class="sidebar-subitem" onclick="loadContent('/teacher/subject-remarks')">
+                <i class="bi bi-pencil-square me-2"></i>
+                Subject Remarks
+              </div>
+              <div class="sidebar-subitem" onclick="loadContent('/teacher/progress-summaries')">
+                <i class="bi bi-graph-up me-2"></i>
+                Progress Summaries
+              </div>
+              <div class="sidebar-subitem" onclick="loadContent('/teacher/curriculum-access')">
+                <i class="bi bi-journal-text me-2"></i>
+                Curriculum Access
+              </div>
+              <div class="sidebar-subitem" onclick="loadContent('/teacher/lesson-plans')">
+                <i class="bi bi-calendar-event me-2"></i>
+                Lesson Plans
+              </div>
+              <div class="sidebar-subitem" onclick="loadContent('/teacher/homework-tracking')">
+                <i class="bi bi-house-door me-2"></i>
+                Homework Tracking
+              </div>
+              <div class="sidebar-subitem" onclick="loadContent('/teacher/exam-schedules')">
+                <i class="bi bi-calendar-check me-2"></i>
+                Exam Schedules
+              </div>
+            </div>
+
+            <!-- Section Divider -->
+            <hr style="border: 2px solid white; margin: 15px 0; opacity: 0.9;">
+
+            <!-- Pupil Information Section -->
+            <div class="sidebar-section">
+              <div class="sidebar-item" style="font-weight: bold; color: #ffff00; cursor: default;">
+                <i class="bi bi-people me-2" style="color: #ff6b35"></i>
+                Pupil Information
+              </div>
+              <hr style="border: 1px solid white; margin: 8px 0; opacity: 0.8;">
+              <div class="sidebar-subitem" onclick="loadContent('/teacher/pupil-profiles')">
+                <i class="bi bi-person-circle me-2"></i>
+                Pupil Profiles
+              </div>
+              <div class="sidebar-subitem" onclick="loadContent('/teacher/academic-history')">
+                <i class="bi bi-mortarboard me-2"></i>
+                Academic History
+              </div>
+              <div class="sidebar-subitem" onclick="loadContent('/teacher/learning-needs')">
+                <i class="bi bi-lightbulb me-2"></i>
+                Learning Needs
+              </div>
+              <div class="sidebar-subitem" onclick="loadContent('/teacher/disciplinary-notes')">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                Disciplinary Notes
+              </div>
+              <div class="sidebar-subitem" onclick="loadContent('/teacher/teacher-notes')">
+                <i class="bi bi-sticky me-2"></i>
+                Teacher Notes
+              </div>
+            </div>
+
+            <!-- Section Divider -->
+            <hr style="border: 2px solid white; margin: 15px 0; opacity: 0.9;">
+
+            <!-- Reports & Analytics Section -->
+            <div class="sidebar-section">
+              <div class="sidebar-item" style="font-weight: bold; color: #ffff00; cursor: default;">
+                <i class="bi bi-bar-chart me-2" style="color: #ff6b35"></i>
+                Reports & Analytics
+              </div>
+              <hr style="border: 1px solid white; margin: 8px 0; opacity: 0.8;">
+              <div class="sidebar-subitem" onclick="loadContent('/teacher/class-performance')">
+                <i class="bi bi-bar-chart-line me-2"></i>
+                Class Performance
+              </div>
+              <div class="sidebar-subitem" onclick="loadContent('/teacher/subject-trends')">
+                <i class="bi bi-graph-up-arrow me-2"></i>
+                Subject Trends
+              </div>
+              <div class="sidebar-subitem" onclick="loadContent('/teacher/attendance-reports')">
+                <i class="bi bi-calendar-check me-2"></i>
+                Attendance Reports
+              </div>
+              <div class="sidebar-subitem" onclick="loadContent('/teacher/class-reports')">
+                <i class="bi bi-file-earmark-pdf me-2"></i>
+                Class Reports
+              </div>
             </div>
           </div>
 
         </div>
         <div
-          class="col-12 col-md-10 offset-md-2"
-          style="
-            position: relative;
-            min-height: 100vh;
-            padding-bottom: 80px;
-            margin-left: 15%;
-            padding-top: 100px;
-          "
+          class="col-12 col-md-10"
+          style="margin-left: 205px !important;"
         >
           <button
             id="showBtn"
@@ -234,6 +345,11 @@
               {% endif %}
             </button>
           </div>
+          
+          <!-- Main Content Area -->
+          <div id="main-content">
+            {% block content %}{% endblock %}
+          </div>
         </div>
       </div>
     </div>
@@ -265,12 +381,43 @@
         const mainContent = document.getElementById("main-content");
         const loading = document.getElementById("loading-indicator");
         if (loading) loading.style.display = "block";
-        fetch(url)
+        fetch(url, {
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        })
           .then((response) => response.text())
           .then((html) => {
-            mainContent.innerHTML = html;
-            const footer = mainContent.querySelector("footer");
-            if (footer) footer.remove();
+            // Parse the HTML to extract only the main content
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            
+            // Find the main-content div in the loaded page
+            const loadedMainContent = doc.getElementById('main-content');
+            if (loadedMainContent) {
+              // Use only the content inside the main-content div
+              mainContent.innerHTML = loadedMainContent.innerHTML;
+            } else {
+              // Fallback: use the entire HTML
+              mainContent.innerHTML = html;
+            }
+            
+            // Execute any scripts in the loaded content
+            const scripts = mainContent.querySelectorAll("script");
+            scripts.forEach(script => {
+              if (script.src) {
+                // External script
+                const newScript = document.createElement("script");
+                newScript.src = script.src;
+                document.head.appendChild(newScript);
+              } else {
+                // Inline script
+                const newScript = document.createElement("script");
+                newScript.textContent = script.textContent;
+                document.head.appendChild(newScript);
+              }
+            });
+            
             if (loading) loading.style.display = "none";
           })
           .catch((error) => {
@@ -409,6 +556,7 @@
       </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    {% include 'footer.html' %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {% include 'welcome_modal.html' %} {% include 'footer.html' %}
   </body>
 </html>

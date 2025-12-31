@@ -1,104 +1,102 @@
-<div class="container-fluid">
-      <div class="row">
-        <div class="col-12">
-          <div
-            class="d-flex justify-content-center align-items-center mt-3 mb-4"
-          >
-        <h2>Create Class</h2>
-          </div>
-          <div class="form-container" style="max-width: 1400px; margin: 0 auto;">
-            {% with messages = get_flashed_messages() %} {% if messages %}
-            <div id="flash-message" class="alert alert-info" role="alert">
-              {% for message in messages %} {{ message }} {% endfor %}
-            </div>
-            {% endif %} {% endwith %}
-            <div class="card" style="background-color: lightblue">
-              <div class="card-body">
-                <form
-                  method="POST"
-                  action="{{ url_for('admin.create_class') }}"
-                  onsubmit="return checkDuplicate()"
-                >
-                  <div class="mb-3">
-                    <label for="name" class="form-label">Class Name</label>
-                    <div class="input-group">
-                      <span class="input-group-text"
-                        ><i class="bi bi-book"></i
-                      ></span>
-                      <input
-                        type="text"
-                        class="form-control"
-                        id="name"
-                        name="name"
-                        value="P."
-                        onblur="this.value = this.value.toLowerCase().replace(/\b\w/g, l => l.toUpperCase())"
-                        required
-                      />
-                    </div>
-                    <div
-                      id="duplicate-error"
-                      class="text-danger mt-1"
-                      style="display: none"
-                    >
-                      This class name already exists!
-                    </div>
-                  </div>
-                  <div class="d-flex justify-content-center">
-                    <button type="submit" class="btn btn-success">
-                      Create Class
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
+{% extends "admin/dashboard.html" %} {% block title %}Create Class - Admin
+Dashboard{% endblock %} {% block content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Create Class</h5>
+      </div>
+      <div class="card-body">
+        {% with messages = get_flashed_messages() %} {% if messages %}
+        <div id="flash-message" class="alert alert-info" role="alert">
+          {% for message in messages %} {{ message }} {% endfor %}
         </div>
+        {% endif %} {% endwith %}
+
+        <form
+          method="POST"
+          action="{{ url_for('admin.create_class') }}"
+          onsubmit="return checkDuplicate()"
+        >
+          <div class="mb-3">
+            <label for="name" class="form-label">Class Name</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-book"></i></span>
+              <input
+                type="text"
+                class="form-control"
+                id="name"
+                name="name"
+                value="P."
+                onblur="this.value = this.value.toLowerCase().replace(/\b\w/g, l => l.toUpperCase())"
+                required
+              />
+            </div>
+            <div
+              id="duplicate-error"
+              class="text-danger mt-1"
+              style="display: none"
+            >
+              This class name already exists!
+            </div>
+          </div>
+          <div class="d-flex justify-content-center">
+            <button type="submit" class="btn btn-success">
+              <i class="bi bi-plus-circle"></i> Create Class
+            </button>
+          </div>
+        </form>
       </div>
     </div>
-    <script>
-      // Sentence case for name
-      document.getElementById("name").addEventListener("input", function () {
-        let value = this.value;
-        if (!value.startsWith("P.")) {
-          this.value = "P." + value.replace(/^P\./, "");
-        }
-        // Capitalize after P.
-        let parts = this.value.split(".");
-        if (parts.length > 1) {
-          parts[1] =
-            parts[1].charAt(0).toUpperCase() + parts[1].slice(1).toLowerCase();
-          this.value = parts.join(".");
-        }
-        // Check for duplicate
-        const name = this.value.trim();
-        if (name.length > 2) {
-          fetch(`/admin/check_duplicate/class/${encodeURIComponent(name)}`)
-            .then((response) => response.json())
-            .then((data) => {
-              const errorDiv = document.getElementById("duplicate-error");
-              if (data.exists) {
-                errorDiv.style.display = "block";
-              } else {
-                errorDiv.style.display = "none";
-              }
-            })
-            .catch((err) => console.error("Error checking duplicate:", err));
-        } else {
-          document.getElementById("duplicate-error").style.display = "none";
-        }
-      });
-      // Hide flash message after 2 seconds
-      setTimeout(() => {
-        const flash = document.getElementById("flash-message");
-        if (flash) flash.style.display = "none";
-      }, 2000);
-      function checkDuplicate() {
-        const errorDiv = document.getElementById("duplicate-error");
-        if (errorDiv.style.display === "block") {
-          alert("Please choose a unique class name.");
-          return false;
-        }
-        return true;
-      }
-    </script>
-    
+  </div>
+</div>
+
+<script>
+  // Sentence case for name
+  document.getElementById("name").addEventListener("input", function () {
+    let value = this.value;
+    if (!value.startsWith("P.")) {
+      this.value = "P." + value.replace(/^P\./, "");
+    }
+    // Capitalize after P.
+    let parts = this.value.split(".");
+    if (parts.length > 1) {
+      parts[1] =
+        parts[1].charAt(0).toUpperCase() + parts[1].slice(1).toLowerCase();
+      this.value = parts.join(".");
+    }
+    // Check for duplicate
+    const name = this.value.trim();
+    if (name.length > 2) {
+      fetch(`/admin/check_duplicate/class/${encodeURIComponent(name)}`)
+        .then((response) => response.json())
+        .then((data) => {
+          const errorDiv = document.getElementById("duplicate-error");
+          if (data.exists) {
+            errorDiv.style.display = "block";
+          } else {
+            errorDiv.style.display = "none";
+          }
+        })
+        .catch((err) => console.error("Error checking duplicate:", err));
+    } else {
+      document.getElementById("duplicate-error").style.display = "none";
+    }
+  });
+
+  // Hide flash message after 2 seconds
+  setTimeout(() => {
+    const flash = document.getElementById("flash-message");
+    if (flash) flash.style.display = "none";
+  }, 2000);
+
+  function checkDuplicate() {
+    const errorDiv = document.getElementById("duplicate-error");
+    if (errorDiv.style.display === "block") {
+      alert("Please choose a unique class name.");
+      return false;
+    }
+    return true;
+  }
+</script>
+{% endblock %}

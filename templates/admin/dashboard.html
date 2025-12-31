@@ -438,7 +438,7 @@
                 padding: 0 2px;
               "
             >
-              <h1 class="text-center mt-5">Dashboard</h1>
+              {% block content %}{% endblock %}
             </div>
             <div
               id="loading-indicator"
@@ -578,22 +578,36 @@
         })
           .then((response) => response.text())
           .then((html) => {
-            mainContent.innerHTML = html;
-            const footer = mainContent.querySelector("footer");
-            if (footer) footer.remove();
-            // Initialize dynamic elements
-            window.capitalizeUsername();
-            window.setupFormValidation();
-            // Attach toggle password event
-            const toggleBtn = document.getElementById("togglePassword");
-            if (toggleBtn) {
-              toggleBtn.addEventListener("click", window.togglePassword);
+            // Parse the HTML to extract only the main content
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, "text/html");
+
+            // Find the main-content div in the loaded page
+            const loadedMainContent = doc.getElementById("main-content");
+            if (loadedMainContent) {
+              // Use only the content inside the main-content div
+              mainContent.innerHTML = loadedMainContent.innerHTML;
+            } else {
+              // Fallback: use the entire HTML
+              mainContent.innerHTML = html;
             }
-            // Hide flash message after 2 seconds
-            setTimeout(() => {
-              const flash = document.getElementById("flash-message");
-              if (flash) flash.style.display = "none";
-            }, 2000);
+
+            // Execute any scripts in the loaded content
+            const scripts = mainContent.querySelectorAll("script");
+            scripts.forEach((script) => {
+              if (script.src) {
+                // External script
+                const newScript = document.createElement("script");
+                newScript.src = script.src;
+                document.head.appendChild(newScript);
+              } else {
+                // Inline script
+                const newScript = document.createElement("script");
+                newScript.textContent = script.textContent;
+                document.body.appendChild(newScript);
+              }
+            });
+
             if (loading) loading.style.display = "none";
           })
           .catch((error) => {

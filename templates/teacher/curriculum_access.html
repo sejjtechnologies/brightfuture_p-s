@@ -1,0 +1,41 @@
+{% extends "teacher/dashboard.html" %} {% block title %}Curriculum Access -
+Teacher Dashboard{% endblock %} {% block content %}
+<div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Curriculum Access</h5>
+        </div>
+        <div class="card-body">
+          <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            Curriculum access functionality is coming soon. This will allow you
+            to view and access curriculum documents for your assigned subjects.
+          </div>
+
+          <!-- Placeholder content -->
+          <div class="row">
+            {% for assignment in assignments %}
+            <div class="col-md-6 col-lg-4 mb-4">
+              <div class="card h-100">
+                <div class="card-body text-center">
+                  <i class="fas fa-book fa-3x text-primary mb-3"></i>
+                  <h6 class="card-title">{{ assignment.subject.name }}</h6>
+                  <p class="card-text text-muted">
+                    Class {{ assignment.class_stream.school_class.name }} {{
+                    assignment.class_stream.stream.name if
+                    assignment.class_stream.stream else '' }}
+                  </p>
+                  <button class="btn btn-outline-primary" disabled>
+                    <i class="fas fa-eye"></i> View Curriculum
+                  </button>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>{% endblock %}
+

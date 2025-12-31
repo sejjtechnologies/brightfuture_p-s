@@ -163,7 +163,7 @@
             </button>
             <form
               method="POST"
-              action="{{ url_for('admin.delete_exam_schedule', id=schedule.id) }}"
+              action="{{ url_for('admin.delete_exam_schedule', schedule_id=schedule.id) }}"
               style="display: inline;"
             >
               <button type="submit" class="btn btn-danger">Delete</button>
@@ -230,10 +230,11 @@
         // Create a form to submit the update
         const form = document.createElement('form');
         form.method = 'POST';
-        form.action = `/admin/update_exam_schedule/${id}`;
+        form.action = `/admin/manage_exam_schedules`;
 
         // Add hidden inputs for the data
         const fields = [
+          { name: 'schedule_id', value: id },
           { name: 'name', value: name },
           { name: 'term_id', value: termId },
           { name: 'exam_date', value: examDate },

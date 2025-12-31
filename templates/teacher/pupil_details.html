@@ -1,0 +1,279 @@
+{% extends "teacher/dashboard.html" %} {% block title %}Pupil Details - {{
+pupil.first_name }} {{ pupil.last_name }}{% endblock %} {% block content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card border-0 shadow-sm" style="border-radius: 12px">
+      <div class="card-header bg-white border-0 py-4">
+        <div class="d-flex align-items-center">
+          <button
+            class="btn me-3"
+            onclick="history.back()"
+            style="background-color: #dc3545; color: white; border: none; border-radius: 8px; padding: 8px 16px; font-weight: 500;"
+          >
+            <i class="bi bi-arrow-left me-2"></i>Back to Profiles
+          </button>
+          <div class="avatar-circle me-3" style="width: 64px; height: 64px">
+            <i class="fas fa-user fa-2x"></i>
+          </div>
+          <div>
+            <h4 class="mb-1 fw-bold">
+              {{ pupil.first_name }} {{ pupil.last_name }}
+            </h4>
+            <p class="text-muted mb-0">
+              <i class="fas fa-graduation-cap me-1"></i>
+              Class {{ pupil.current_class.name }}{% if pupil.current_stream %}
+              {{ pupil.current_stream.name }}{% endif %}
+            </p>
+            <p class="text-muted mb-0">
+              <i class="fas fa-id-card me-1"></i>Admission #: {{
+              pupil.admission_number }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body p-4">
+        <div class="row">
+          <!-- Personal Information -->
+          <div class="col-lg-6 mb-4">
+            <div
+              class="card border-0"
+              style="border-radius: 8px; background-color: #e3f2fd"
+            >
+              <div class="card-header bg-white border-0">
+                <h5 class="mb-0">
+                  <i class="fas fa-user-circle me-2 text-primary"></i>Personal
+                  Information
+                </h5>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-sm-6 mb-3">
+                    <label class="form-label fw-bold text-muted"
+                      >First Name</label
+                    >
+                    <p class="mb-0">{{ pupil.first_name }}</p>
+                  </div>
+                  <div class="col-sm-6 mb-3">
+                    <label class="form-label fw-bold text-muted"
+                      >Last Name</label
+                    >
+                    <p class="mb-0">{{ pupil.last_name }}</p>
+                  </div>
+                  <div class="col-sm-6 mb-3">
+                    <label class="form-label fw-bold text-muted"
+                      >Date of Birth</label
+                    >
+                    <p class="mb-0">
+                      {{ pupil.date_of_birth.strftime('%B %d, %Y') if
+                      pupil.date_of_birth else 'Not specified' }}
+                    </p>
+                  </div>
+                  <div class="col-sm-6 mb-3">
+                    <label class="form-label fw-bold text-muted">Gender</label>
+                    <p class="mb-0">
+                      {{ pupil.gender if pupil.gender else 'Not specified' }}
+                    </p>
+                  </div>
+                  <div class="col-sm-6 mb-3">
+                    <label class="form-label fw-bold text-muted"
+                      >Nationality</label
+                    >
+                    <p class="mb-0">
+                      {{ pupil.nationality if pupil.nationality else 'Not
+                      specified' }}
+                    </p>
+                  </div>
+                  <div class="col-sm-6 mb-3">
+                    <label class="form-label fw-bold text-muted"
+                      >Religion</label
+                    >
+                    <p class="mb-0">
+                      {{ pupil.religion if pupil.religion else 'Not specified'
+                      }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Academic Information -->
+          <div class="col-lg-6 mb-4">
+            <div
+              class="card border-0"
+              style="border-radius: 8px; background-color: #e8f5e8"
+            >
+              <div class="card-header bg-white border-0">
+                <h5 class="mb-0">
+                  <i class="fas fa-graduation-cap me-2 text-success"></i
+                  >Academic Information
+                </h5>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-sm-6 mb-3">
+                    <label class="form-label fw-bold text-muted"
+                      >Admission Number</label
+                    >
+                    <p class="mb-0">{{ pupil.admission_number }}</p>
+                  </div>
+                  <div class="col-sm-6 mb-3">
+                    <label class="form-label fw-bold text-muted"
+                      >Admission Date</label
+                    >
+                    <p class="mb-0">
+                      {{ pupil.admission_date.strftime('%B %d, %Y') if
+                      pupil.admission_date else 'Not specified' }}
+                    </p>
+                  </div>
+                  <div class="col-sm-6 mb-3">
+                    <label class="form-label fw-bold text-muted"
+                      >Current Class</label
+                    >
+                    <p class="mb-0">
+                      {{ pupil.current_class.name if pupil.current_class else
+                      'Not assigned' }}
+                    </p>
+                  </div>
+                  <div class="col-sm-6 mb-3">
+                    <label class="form-label fw-bold text-muted"
+                      >Current Stream</label
+                    >
+                    <p class="mb-0">
+                      {{ pupil.current_stream.name if pupil.current_stream else
+                      'Not assigned' }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <!-- Contact Information -->
+          <div class="col-lg-6 mb-4">
+            <div
+              class="card border-0"
+              style="border-radius: 8px; background-color: #fff9c4"
+            >
+              <div class="card-header bg-white border-0">
+                <h5 class="mb-0">
+                  <i class="fas fa-phone me-2 text-info"></i>Contact Information
+                </h5>
+              </div>
+              <div class="card-body">
+                <div class="mb-3">
+                  <label class="form-label fw-bold text-muted"
+                    >Phone Number</label
+                  >
+                  <p class="mb-0">
+                    {{ pupil.phone if pupil.phone else 'Not specified' }}
+                  </p>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label fw-bold text-muted"
+                    >Email Address</label
+                  >
+                  <p class="mb-0">
+                    {{ pupil.email if pupil.email else 'Not specified' }}
+                  </p>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label fw-bold text-muted">Address</label>
+                  <p class="mb-0">
+                    {{ pupil.address if pupil.address else 'Not specified' }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Guardian Information -->
+          <div class="col-lg-6 mb-4">
+            <div
+              class="card border-0"
+              style="border-radius: 8px; background-color: #f3e5f5"
+            >
+              <div class="card-header bg-white border-0">
+                <h5 class="mb-0">
+                  <i class="fas fa-users me-2 text-warning"></i>Guardian
+                  Information
+                </h5>
+              </div>
+              <div class="card-body">
+                <div class="mb-3">
+                  <label class="form-label fw-bold text-muted"
+                    >Father's Name</label
+                  >
+                  <p class="mb-0">
+                    {{ pupil.father_name if pupil.father_name else 'Not
+                    specified' }}
+                  </p>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label fw-bold text-muted"
+                    >Mother's Name</label
+                  >
+                  <p class="mb-0">
+                    {{ pupil.mother_name if pupil.mother_name else 'Not
+                    specified' }}
+                  </p>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label fw-bold text-muted"
+                    >Guardian Phone</label
+                  >
+                  <p class="mb-0">
+                    {{ pupil.guardian_phone if pupil.guardian_phone else 'Not
+                    specified' }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function viewAcademicHistory(pupilId) {
+    // Redirect to academic history page
+    window.location.href = `/teacher/academic-history?pupil_id=${pupilId}`;
+  }
+</script>
+
+<style>
+  .avatar-circle {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: 3px solid white;
+  }
+
+  .card {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08) !important;
+  }
+
+  .form-label {
+    font-size: 0.85em;
+    margin-bottom: 0.25rem;
+  }
+
+  .btn {
+    border-radius: 6px;
+    font-weight: 500;
+  }
+</style>
+{% endblock %}

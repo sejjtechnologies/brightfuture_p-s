@@ -21,6 +21,8 @@ class ClassStream(db.Model):
     stream_id = db.Column(db.Integer, db.ForeignKey('stream.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=db.func.now())
     __table_args__ = (db.UniqueConstraint('class_id', 'stream_id'),)
+    school_class = db.relationship('SchoolClass', backref=db.backref('class_streams', lazy=True))
+    stream = db.relationship('Stream', backref=db.backref('class_streams', lazy=True))
 
 class TeacherAssignment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -29,6 +31,8 @@ class TeacherAssignment(db.Model):
     subject_id = db.Column(db.Integer, db.ForeignKey('subject.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=db.func.now())
     __table_args__ = (db.UniqueConstraint('teacher_id', 'class_stream_id', 'subject_id'),)
+    class_stream = db.relationship('ClassStream', backref=db.backref('teacher_assignments', lazy=True))
+    subject = db.relationship('Subject', backref=db.backref('teacher_assignments', lazy=True))
 
 class AcademicYear(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -75,6 +79,14 @@ class NotificationRead(db.Model):
     read_at = db.Column(db.DateTime, default=db.func.now())
     notification = db.relationship('Notification', backref=db.backref('reads', lazy=True))
     user = db.relationship('SystemUser', backref=db.backref('read_notifications', lazy=True))
+
+class ExamType(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), unique=True, nullable=False)
+    description = db.Column(db.String(255), nullable=True)
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=db.func.now())
+    updated_at = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
 
 class SystemSetting(db.Model):
     id = db.Column(db.Integer, primary_key=True)

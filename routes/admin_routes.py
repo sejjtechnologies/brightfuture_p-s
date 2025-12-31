@@ -446,10 +446,10 @@ def assign_teachers():
     streams = Stream.query.all()
     subjects = Subject.query.all()
     if request.method == 'POST':
-        teacher_id = request.form['teacher_id']
-        class_id = request.form['class_id']
-        stream_id = request.form['stream_id']
-        subject_id = request.form['subject_id']
+        teacher_id = int(request.form['teacher_id'])
+        class_id = int(request.form['class_id'])
+        stream_id = int(request.form['stream_id'])
+        subject_id = int(request.form['subject_id'])
         # Check if class_stream exists, else create
         class_stream = ClassStream.query.filter_by(class_id=class_id, stream_id=stream_id).first()
         if not class_stream:
@@ -485,10 +485,10 @@ def manage_assignments():
     if not user or user.role.name != 'Admin':
         return redirect(url_for('authbp.login'))
     if request.method == 'POST':
-        assignment_id = request.form.get('assignment_id')
-        class_id = request.form.get('class_id')
-        stream_id = request.form.get('stream_id')
-        subject_id = request.form.get('subject_id')
+        assignment_id = int(request.form.get('assignment_id'))
+        class_id = int(request.form.get('class_id'))
+        stream_id = int(request.form.get('stream_id'))
+        subject_id = int(request.form.get('subject_id'))
         # Find or create class_stream
         class_stream = ClassStream.query.filter_by(class_id=class_id, stream_id=stream_id).first()
         if not class_stream:
@@ -822,12 +822,12 @@ def manage_exam_schedules():
     if not user or user.role.name != 'Admin':
         return redirect(url_for('authbp.login'))
     if request.method == 'POST':
-        schedule_id = request.form.get('schedule_id')
+        schedule_id = int(request.form.get('schedule_id'))
         name = request.form.get('name')
-        term_id = request.form.get('term_id')
+        term_id = int(request.form.get('term_id'))
         exam_date = request.form.get('exam_date')
-        subject_id = request.form.get('subject_id')
-        class_id = request.form.get('class_id')
+        subject_id = int(request.form.get('subject_id'))
+        class_id = int(request.form.get('class_id'))
         s = ExamSchedule.query.get(schedule_id)
         if s:
             if ExamSchedule.query.filter(ExamSchedule.name == name, ExamSchedule.term_id == term_id, ExamSchedule.subject_id == subject_id, ExamSchedule.class_id == class_id, ExamSchedule.id != schedule_id).first():
@@ -841,7 +841,7 @@ def manage_exam_schedules():
                 db.session.commit()
                 flash('Exam schedule updated successfully!')
         return redirect(url_for('admin.manage_exam_schedules'))
-    schedules = ExamSchedule.query.join(Term).join(Subject).join(SchoolClass).add_columns(Term.name.label('term_name'), Subject.name.label('subject_name'), SchoolClass.name.label('class_name')).order_by(ExamSchedule.id.asc()).all()
+    schedules = ExamSchedule.query.options(db.joinedload(ExamSchedule.term).joinedload(Term.academic_year), db.joinedload(ExamSchedule.subject), db.joinedload(ExamSchedule.school_class)).order_by(ExamSchedule.id.asc()).all()
     terms = Term.query.all()
     subjects = Subject.query.all()
     classes = SchoolClass.query.all()
@@ -849,7 +849,7 @@ def manage_exam_schedules():
 
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
 
-        return render_template('admin/manage_exam_schedules.html', schedules=schedules, terms=terms, subjects=subjects, classes=classes)
+        return render_template('admin/manage_exam_schedules.html', exam_schedules=schedules, terms=terms, subjects=subjects, classes=classes)
 
     else:
 

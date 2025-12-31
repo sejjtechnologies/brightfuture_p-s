@@ -1,0 +1,46 @@
+{% extends "teacher/dashboard.html" %} {% block title %}Learning Needs - Teacher
+Dashboard{% endblock %} {% block content %}
+<div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Learning Needs</h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-striped table-hover">
+              <thead>
+                <tr>
+                  <th>Pupil Name</th>
+                  <th>Class</th>
+                  <th>Learning Need</th>
+                  <th>Support Required</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for need in learning_needs %}
+                <tr>
+                  <td>
+                    {{ need.pupil.first_name }} {{ need.pupil.last_name }}
+                  </td>
+                  <td>{{ need.pupil.current_class.name }}</td>
+                  <td>{{ need.learning_need_type }}</td>
+                  <td>{{ need.support_required or 'N/A' }}</td>
+                  <td><span class="badge bg-info">{{ need.status }}</span></td>
+                </tr>
+                {% endfor %} {% if not learning_needs %}
+                <tr>
+                  <td colspan="5" class="text-center">
+                    No learning needs records found
+                  </td>
+                </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>{% endblock %}
+

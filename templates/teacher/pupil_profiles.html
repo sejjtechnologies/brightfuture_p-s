@@ -1,0 +1,182 @@
+{% extends "teacher/dashboard.html" %} {% block title %}Pupil Profiles - Teacher
+Dashboard{% endblock %} {% block content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div
+        class="card-header d-flex justify-content-between align-items-center"
+      >
+        <h5 class="mb-0">Pupil Profiles</h5>
+        <div class="d-flex align-items-center gap-2">
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            style="width: 200px"
+            id="searchPupil"
+            placeholder="Search pupils..."
+            autocomplete="off"
+          />
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            onclick="clearSearch()"
+          >
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div id="pupilsContainer">
+          <!-- Pupil cards will be loaded via AJAX -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    $(document).ready(function () {
+      loadPupils();
+
+      // Search functionality
+      let searchTimeout;
+      $("#searchPupil").on("input", function () {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(function () {
+          loadPupils($("#searchPupil").val());
+        }, 300);
+      });
+
+      function loadPupils(search = "") {
+        console.log("Loading pupils, search:", search);
+        $.ajax({
+          url: "/teacher/api/pupil-profiles",
+          method: "GET",
+          data: { search: search },
+          success: function (data) {
+            console.log("API response:", data);
+            renderPupils(data.pupils);
+          },
+          error: function (xhr, status, error) {
+            console.error("API error:", status, error);
+            showToast("Failed to load pupils", "error");
+          },
+        });
+      }
+
+      function renderPupils(pupils) {
+        const container = $("#pupilsContainer");
+        container.empty();
+
+        if (pupils.length === 0) {
+          container.append(`
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+                            <div class="card-body text-center py-5">
+                                <div class="avatar-circle mx-auto mb-3" style="width: 64px; height: 64px; background-color: #f8f9fa;">
+                                    <i class="fas fa-users text-muted" style="font-size: 1.8em;"></i>
+                                </div>
+                                <h6 class="text-muted mb-2">No pupils found</h6>
+                                <p class="text-muted small mb-0">Try adjusting your search criteria</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `);
+          return;
+        }
+
+        // Create row container for full-width cards
+        let cardsHtml = '<div class="row g-2">';
+
+        pupils.forEach(function (pupil, index) {
+          const streamText = pupil.current_stream
+            ? ` ${pupil.current_stream}`
+            : "";
+          const pupilNumber = index + 1;
+          cardsHtml += `
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm" style="border-radius: 8px;">
+                        <div class="card-body p-2 d-flex align-items-center">
+                            <div class="number-circle me-3 flex-shrink-0" style="width: 32px; height: 32px; border-radius: 50%; background-color: #dc3545; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9em;">
+                                ${pupilNumber}
+                            </div>
+                            <div class="avatar-circle me-3 flex-shrink-0" style="width: 36px; height: 36px;">
+                                <i class="fas fa-user text-primary"></i>
+                            </div>
+                            <div class="flex-grow-1 min-w-0 d-flex justify-content-between align-items-center">
+                                <div class="d-flex flex-column">
+                                    <h6 class="mb-0 fw-bold text-dark" style="font-size: 0.9em; line-height: 1.2;">${pupil.first_name} ${pupil.last_name}</h6>
+                                    <div class="d-flex gap-3 mt-1">
+                                        <small class="text-muted">
+                                            <i class="fas fa-graduation-cap me-1"></i>Class ${pupil.current_class}${streamText}
+                                        </small>
+                                        <small class="text-muted">
+                                            <i class="fas fa-id-card me-1"></i>${pupil.admission_number}
+                                        </small>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary btn-sm rounded-pill ms-2" onclick="viewPupilDetails(${pupil.id})" style="flex-shrink: 0;">
+                                    <i class="fas fa-eye me-1"></i>View
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        cardsHtml += "</div>";
+        container.append(cardsHtml);
+      }
+
+      window.viewPupilDetails = function (pupilId) {
+        // Redirect to detailed pupil view page
+        window.location.href = `/teacher/pupil-details/${pupilId}`;
+      };
+
+      window.clearSearch = function () {
+        $("#searchPupil").val("");
+        loadPupils("");
+      };
+    });
+  </script>
+
+  <style>
+    .avatar-circle {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1em;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border: 2px solid white;
+    }
+
+    .card {
+      transition: none;
+    }
+
+    .card:hover {
+      transform: none;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      font-weight: 500;
+      transition: none;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      transform: none;
+      box-shadow: none;
+    }
+  </style>
+  {% endblock %}
+</div>

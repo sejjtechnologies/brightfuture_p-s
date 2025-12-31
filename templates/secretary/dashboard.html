@@ -82,13 +82,14 @@
       id="sidebar"
       class="col-12 col-md-2 bg-primary"
       style="
-        height: calc(100vh - 60px);
+        height: 100vh;
         background-color: #00008b !important;
         position: fixed;
         padding-top: 2px;
-        z-index: 1000;
+        z-index: 1001;
         overflow-y: auto;
-        width: 15%;
+        overflow-x: hidden;
+        width: 205px !important;
       "
     >
       <button
@@ -128,12 +129,12 @@
 
     <!-- Scrollable Main Content -->
     <div
-      class="col-12 col-md-10 offset-md-2"
+      class="col-12 col-md-10"
       style="
         position: relative;
         min-height: 100vh;
         padding-bottom: 80px;
-        margin-left: 15%;
+        margin-left: 205px !important;
         padding-top: 100px;
       "
     >

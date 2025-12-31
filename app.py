@@ -7,6 +7,15 @@ from sqlalchemy import select
 
 from models.auth_models import SystemUser
 
+# Import blueprints
+from routes.auth_routes import auth_bp
+from routes.admin_routes import admin_bp
+# from routes.bursar_routes import bursar_bp  # TODO: Implement bursar routes
+# from routes.headteacher_routes import headteacher_bp  # TODO: Implement headteacher routes
+from routes.secretary_routes import secretary_bp
+from routes.parent_routes import parent_bp
+from routes.teacher_routes import teacher_bp
+
 load_dotenv()
 
 def get_term_progress_info():
@@ -141,6 +150,7 @@ from routes.auth_routes import auth_bp
 from routes.admin_routes import admin_bp
 from routes.secretary_routes import secretary_bp
 from routes.parent_routes import parent_bp
+from routes.teacher_routes import teacher_bp
 
 @app.context_processor
 def inject_version():
@@ -148,8 +158,11 @@ def inject_version():
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(admin_bp)
+# app.register_blueprint(bursar_bp)  # TODO: Implement bursar routes
+# app.register_blueprint(headteacher_bp)  # TODO: Implement headteacher routes
 app.register_blueprint(secretary_bp)
 app.register_blueprint(parent_bp)
+app.register_blueprint(teacher_bp)
 
 @app.route('/')
 def home():
@@ -189,7 +202,15 @@ def teacher():
 
     term_progress = get_term_progress_info()
 
-    return render_template('teacher/dashboard.html', notifications=notifications, term_progress=term_progress, unread_count=unread_count)
+    # Get settings for welcome modal
+    school_name_setting = SystemSetting.query.filter_by(key='school_name').first()
+    contact_phone_setting = SystemSetting.query.filter_by(key='contact_phone').first()
+    contact_email_setting = SystemSetting.query.filter_by(key='contact_email').first()
+    school_name = school_name_setting.value if school_name_setting and school_name_setting.value else 'Bright Future P.S'
+    contact_phone = contact_phone_setting.value if contact_phone_setting and contact_phone_setting.value else '+256786210221'
+    contact_email = contact_email_setting.value if contact_email_setting and contact_email_setting.value else 'sejjtechnologies@gmail.com'
+
+    return render_template('teacher/dashboard.html', notifications=notifications, term_progress=term_progress, unread_count=unread_count, school_name=school_name, contact_phone=contact_phone, contact_email=contact_email)
 
 @app.route('/secretary')
 def secretary():
@@ -264,7 +285,15 @@ def bursar():
 
     term_progress = get_term_progress_info()
 
-    return render_template('bursar/dashboard.html', notifications=notifications, term_progress=term_progress, unread_count=unread_count)
+    # Get settings for welcome modal
+    school_name_setting = SystemSetting.query.filter_by(key='school_name').first()
+    contact_phone_setting = SystemSetting.query.filter_by(key='contact_phone').first()
+    contact_email_setting = SystemSetting.query.filter_by(key='contact_email').first()
+    school_name = school_name_setting.value if school_name_setting and school_name_setting.value else 'Bright Future P.S'
+    contact_phone = contact_phone_setting.value if contact_phone_setting and contact_phone_setting.value else '+256786210221'
+    contact_email = contact_email_setting.value if contact_email_setting and contact_email_setting.value else 'sejjtechnologies@gmail.com'
+
+    return render_template('bursar/dashboard.html', notifications=notifications, term_progress=term_progress, unread_count=unread_count, school_name=school_name, contact_phone=contact_phone, contact_email=contact_email)
 
 @app.route('/headteacher')
 def headteacher():
@@ -300,7 +329,15 @@ def headteacher():
 
     term_progress = get_term_progress_info()
 
-    return render_template('headteacher/dashboard.html', notifications=notifications, term_progress=term_progress, unread_count=unread_count)
+    # Get settings for welcome modal
+    school_name_setting = SystemSetting.query.filter_by(key='school_name').first()
+    contact_phone_setting = SystemSetting.query.filter_by(key='contact_phone').first()
+    contact_email_setting = SystemSetting.query.filter_by(key='contact_email').first()
+    school_name = school_name_setting.value if school_name_setting and school_name_setting.value else 'Bright Future P.S'
+    contact_phone = contact_phone_setting.value if contact_phone_setting and contact_phone_setting.value else '+256786210221'
+    contact_email = contact_email_setting.value if contact_email_setting and contact_email_setting.value else 'sejjtechnologies@gmail.com'
+
+    return render_template('headteacher/dashboard.html', notifications=notifications, term_progress=term_progress, unread_count=unread_count, school_name=school_name, contact_phone=contact_phone, contact_email=contact_email)
 
 @app.route('/parent')
 def parent():

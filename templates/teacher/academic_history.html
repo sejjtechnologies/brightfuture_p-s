@@ -1,0 +1,384 @@
+{% extends "teacher/dashboard.html" %}
+
+{% block title %}Academic History - Teacher Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Academic History</h5>
+            </div>
+            <div class="card-body">
+                    <!-- Filters -->
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <label for="pupilSelect" class="form-label">Select Pupil</label>
+                            <select class="form-select" id="pupilSelect">
+                                <option value="">All Pupils</option>
+                                {% for pupil in pupils %}
+                                <option value="{{ pupil.id }}" {{ 'selected' if request.args.get('pupil_id') == pupil.id|string else '' }}>
+                                    {{ pupil.first_name }} {{ pupil.last_name }} ({{ pupil.current_class.name }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="academicYearSelect" class="form-label">Academic Year</label>
+                            <select class="form-select" id="academicYearSelect">
+                                <option value="">All Years</option>
+                                <!-- Academic years will be loaded via AJAX -->
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="termSelect" class="form-label">Term</label>
+                            <select class="form-select" id="termSelect">
+                                <option value="">All Terms</option>
+                                <!-- Terms will be loaded via AJAX -->
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button class="btn btn-primary me-2" onclick="loadAcademicHistory()">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                            <button class="btn btn-outline-secondary" onclick="clearFilters()">
+                                <i class="fas fa-times"></i> Clear
+                            </button>
+                        </div><!-- Academic History Content -->
+                    <div id="academicHistoryContent">
+                        <div class="text-center py-5">
+                            <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">Select a pupil to view their academic history</h5>
+                            <p class="text-muted">Choose a pupil from the dropdown above to see their assessment results, progress summaries, and academic performance over time.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- Assessment Details Modal -->
+<div class="modal fade" id="assessmentDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Assessment Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="assessmentDetailsContent">
+                <!-- Assessment details will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    loadAcademicYears();
+    loadTerms();
+
+    // Auto-load if pupil_id is in URL params
+    const urlParams = new URLSearchParams(window.location.search);
+    const pupilId = urlParams.get('pupil_id');
+    if (pupilId) {
+        $('#pupilSelect').val(pupilId);
+        loadAcademicHistory();
+    }
+
+    $('#pupilSelect, #academicYearSelect, #termSelect').on('change', function() {
+        loadAcademicHistory();
+    });
+});
+
+function showToast(message, type = 'info') {
+    // Create toast container if it doesn't exist
+    if (!$('#toastContainer').length) {
+        $('body').append(`
+            <div id="toastContainer" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+            </div>
+        `);
+    }
+
+    const toastId = 'toast-' + Date.now();
+    const bgClass = type === 'error' ? 'bg-danger' : type === 'success' ? 'bg-success' : 'bg-primary';
+
+    $('#toastContainer').append(`
+        <div id="${toastId}" class="toast align-items-center text-white ${bgClass} border-0" role="alert">
+            <div class="d-flex">
+                <div class="toast-body">${message}</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    `);
+
+    const toast = new bootstrap.Toast(document.getElementById(toastId));
+    toast.show();
+
+    // Remove toast element after it's hidden
+    $(`#${toastId}`).on('hidden.bs.toast', function() {
+        $(this).remove();
+    });
+}
+
+function loadAcademicYears() {
+    $.ajax({
+        url: '/teacher/api/academic-years',
+        method: 'GET',
+        success: function(data) {
+            const select = $('#academicYearSelect');
+            select.empty();
+            select.append('<option value="">All Years</option>');
+
+            data.forEach(function(year) {
+                select.append(`<option value="${year.id}">${year.name}</option>`);
+            });
+        }
+    });
+}
+
+function loadTerms() {
+    $.ajax({
+        url: '/teacher/api/terms',
+        method: 'GET',
+        success: function(data) {
+            const select = $('#termSelect');
+            select.empty();
+            select.append('<option value="">All Terms</option>');
+
+            data.forEach(function(term) {
+                select.append(`<option value="${term.id}">${term.name} (${term.academic_year})</option>`);
+            });
+        }
+    });
+}
+
+function loadAcademicHistory() {
+    const pupilId = $('#pupilSelect').val();
+    const academicYearId = $('#academicYearSelect').val();
+    const termId = $('#termSelect').val();
+
+    if (!pupilId) {
+        $('#academicHistoryContent').html(`
+            <div class="text-center py-5">
+                <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">Select a pupil to view their academic history</h5>
+                <p class="text-muted">Choose a pupil from the dropdown above to see their assessment results, progress summaries, and academic performance over time.</p>
+            </div>
+        `);
+        return;
+    }
+
+    const filters = {
+        pupil_id: pupilId,
+        academic_year_id: academicYearId,
+        term_id: termId
+    };
+
+    $.ajax({
+        url: '/teacher/api/academic-history',
+        method: 'GET',
+        data: filters,
+        success: function(data) {
+            renderAcademicHistory(data);
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX error:', { xhr, status, error });
+            showToast('Failed to load academic history', 'error');
+        }
+    });
+}
+
+function renderAcademicHistory(data) {
+    const content = $('#academicHistoryContent');
+
+    if (!data.pupil) {
+        content.html('<div class="alert alert-warning">Pupil not found</div>');
+        return;
+    }
+
+    let html = `
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">${data.pupil.first_name} ${data.pupil.last_name} - Academic Overview</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <div class="avatar-circle mb-2 mx-auto">
+                                        <i class="fas fa-user fa-2x text-primary"></i>
+                                    </div>
+                                    <strong>${data.pupil.first_name} ${data.pupil.last_name}</strong>
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <p><strong>Class:</strong> ${data.pupil.current_class} ${data.pupil.current_stream || ''}</p>
+                                        <p><strong>Admission #:</strong> ${data.pupil.admission_number}</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p><strong>Total Assessments:</strong> ${data.stats.total_assessments}</p>
+                                        <p><strong>Average Score:</strong> ${data.stats.average_score ? data.stats.average_score.toFixed(1) + '%' : 'N/A'}</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p><strong>Progress Summaries:</strong> ${data.stats.total_summaries}</p>
+                                        <p><strong>Latest Grade:</strong> ${data.stats.latest_grade || 'N/A'}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">Assessment Results</h6>
+                    </div>
+                    <div class="card-body">
+                        ${renderAssessmentResults(data.assessments)}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">Progress Summaries</h6>
+                    </div>
+                    <div class="card-body">
+                        ${renderProgressSummaries(data.summaries)}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    content.html(html);
+}
+
+function renderAssessmentResults(assessments) {
+    if (assessments.length === 0) {
+        return '<p class="text-muted">No assessment results found for the selected criteria.</p>';
+    }
+
+    let html = '<div class="table-responsive"><table class="table table-sm">';
+    html += '<thead><tr><th>Subject</th><th>Assessment</th><th>Score</th><th>Grade</th><th>Date</th><th>Actions</th></tr></thead><tbody>';
+
+    assessments.forEach(function(assessment) {
+        const percentage = assessment.total_marks > 0 ? ((assessment.score / assessment.total_marks) * 100).toFixed(1) : 0;
+        const grade = getGradeFromPercentage(percentage);
+
+        html += `
+            <tr>
+                <td>${assessment.subject}</td>
+                <td>${assessment.title}</td>
+                <td>${assessment.score}/${assessment.total_marks} (${percentage}%)</td>
+                <td><span class="badge bg-${getGradeColor(grade)}">${grade}</span></td>
+                <td>${assessment.date}</td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary" onclick="viewAssessmentDetails(${assessment.id})">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+
+    html += '</tbody></table></div>';
+    return html;
+}
+
+function renderProgressSummaries(summaries) {
+    if (summaries.length === 0) {
+        return '<p class="text-muted">No progress summaries found for the selected criteria.</p>';
+    }
+
+    let html = '';
+    summaries.forEach(function(summary) {
+        html += `
+            <div class="mb-3 p-3 border rounded">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <strong>${summary.term}</strong>
+                    <span class="badge bg-${getGradeColor(summary.overall_grade)}">${summary.overall_grade}</span>
+                </div>
+                <p class="mb-1"><small class="text-muted">Status: ${getStatusText(summary.status)}</small></p>
+                <p class="mb-1"><small class="text-muted">Attendance: ${summary.attendance_percentage}%</small></p>
+                <p class="mb-0">${summary.academic_performance}</p>
+                <button class="btn btn-sm btn-outline-primary mt-2" onclick="viewSummaryDetails(${summary.id})">
+                    <i class="fas fa-eye"></i> View Details
+                </button>
+            </div>
+        `;
+    });
+
+    return html;
+}
+
+function getGradeFromPercentage(percentage) {
+    const score = parseFloat(percentage);
+    if (score >= 90) return 'A';
+    if (score >= 80) return 'B';
+    if (score >= 70) return 'C';
+    if (score >= 60) return 'D';
+    if (score >= 50) return 'E';
+    return 'F';
+}
+
+function getGradeColor(grade) {
+    const colors = { 'A': 'success', 'B': 'primary', 'C': 'info', 'D': 'warning', 'E': 'danger', 'F': 'dark' };
+    return colors[grade] || 'secondary';
+}
+
+function getStatusText(status) {
+    const statuses = {
+        'excellent': 'Excellent Progress',
+        'good': 'Good Progress',
+        'satisfactory': 'Satisfactory',
+        'needs_improvement': 'Needs Improvement',
+        'concern': 'Cause for Concern'
+    };
+    return statuses[status] || status;
+}
+
+window.viewAssessmentDetails = function(assessmentId) {
+    $.ajax({
+        url: `/teacher/api/assessment-details/${assessmentId}`,
+        method: 'GET',
+        success: function(data) {
+            // TODO: Render assessment details in modal
+            $('#assessmentDetailsContent').html('<pre>' + JSON.stringify(data, null, 2) + '</pre>');
+            $('#assessmentDetailsModal').modal('show');
+        },
+        error: function() {
+            showToast('Failed to load assessment details', 'error');
+        }
+    });
+};
+
+window.viewSummaryDetails = function(summaryId) {
+    // TODO: Implement view summary details
+    showToast('View summary details functionality coming soon!', 'info');
+};
+
+window.clearFilters = function() {
+    $('#pupilSelect, #academicYearSelect, #termSelect').val('');
+    loadAcademicHistory();
+};
+</script>
+
+<style>
+.avatar-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #dee2e6;
+}
+</style>
+{% endblock %}

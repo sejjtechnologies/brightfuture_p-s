@@ -1,0 +1,50 @@
+{% extends "teacher/dashboard.html" %} {% block title %}Disciplinary Notes -
+Teacher Dashboard{% endblock %} {% block content %}
+<div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Disciplinary Notes</h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-striped table-hover">
+              <thead>
+                <tr>
+                  <th>Pupil Name</th>
+                  <th>Class</th>
+                  <th>Incident Type</th>
+                  <th>Description</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for note in notes %}
+                <tr>
+                  <td>
+                    {{ note.pupil.first_name }} {{ note.pupil.last_name }}
+                  </td>
+                  <td>{{ note.pupil.current_class.name }}</td>
+                  <td>{{ note.incident_type }}</td>
+                  <td>{{ note.description }}</td>
+                  <td>{{ note.incident_date.strftime('%Y-%m-%d') }}</td>
+                  <td>
+                    <span class="badge bg-warning">{{ note.status }}</span>
+                  </td>
+                </tr>
+                {% endfor %} {% if not notes %}
+                <tr>
+                  <td colspan="6" class="text-center">
+                    No disciplinary notes found
+                  </td>
+                </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>{% endblock %}
+

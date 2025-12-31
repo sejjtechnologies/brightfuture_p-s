@@ -1,0 +1,845 @@
+{% extends "teacher/dashboard.html" %}
+{% block title %}Excel-like Marks Entry - Teacher Dashboard{% endblock %}
+{% block content %}
+<style>
+  .excel-container {
+    background: white;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .excel-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .excel-toolbar {
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    padding: 10px;
+  }
+
+  .excel-table-container {
+    position: relative;
+    max-height: 70vh;
+    overflow-y: auto;
+    overflow-x: visible; /* allow table to expand without scrolling */
+  }
+
+  .container {
+    max-width: none;
+    width: 100%;
+  }
+  }
+
+  .excel-table {
+    border-collapse: collapse;
+    width: max-content; /* size to content but allow container to scroll */
+    min-width: 100%;
+    font-size: 11px;
+    table-layout: auto; /* let columns size naturally so they don't overlap */
+  }
+
+  .excel-table th {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    padding: 6px 4px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    white-space: normal;
+    word-break: break-word;
+    line-height: 1.2;
+    vertical-align: middle;
+  }
+
+  .excel-table td {
+    border: 1px solid #dee2e6;
+    padding: 0;
+    margin: 0;
+    position: relative;
+  }
+
+  .excel-table .row-number {
+    background: #f8f9fa;
+    font-weight: bold;
+    text-align: center;
+    width: 35px;
+    min-width: 35px;
+  }
+
+  .excel-table .student-info {
+    background: #fff;
+    padding: 3px 4px;
+    font-weight: 500;
+    font-size: 11px;
+  }
+
+  /* Make grade and points centered and compact */
+  .excel-table .grade-cell,
+  .excel-table .excel-cell {
+    text-align: center;
+    padding: 4px 6px;
+  }
+
+  .excel-cell {
+    width: 50px;
+    min-width: 50px;
+    height: 28px;
+    border: none;
+    text-align: center;
+    font-size: 11px;
+    background: white;
+    transition: all 0.2s ease;
+  }
+
+  .excel-cell:focus {
+    outline: 2px solid #007bff;
+    outline-offset: -2px;
+    background: #fff3cd;
+    z-index: 5;
+  }
+
+  .excel-cell:hover {
+    background: #f8f9fa;
+  }
+
+  .excel-cell.disabled-cell {
+    background-color: #f8f9fa !important;
+    color: #6c757d !important;
+    cursor: not-allowed;
+  }
+
+  .excel-cell.disabled-cell:hover {
+    background-color: #f8f9fa !important;
+  }
+
+  .grade-cell {
+    background: #e9ecef;
+    font-weight: bold;
+    color: #495057;
+    text-align: center;
+  }
+
+  .remarks-cell {
+    width: 100px;
+    min-width: 100px;
+  }
+
+  .remarks-cell textarea {
+    width: 100%;
+    height: 26px;
+    border: none;
+    resize: none;
+    font-size: 10px;
+    padding: 3px;
+  }
+
+  .remarks-cell textarea:focus {
+    outline: 2px solid #007bff;
+    outline-offset: -2px;
+  }
+
+  .save-btn {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+    padding: 6px 16px;
+    border-radius: 4px;
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    font-size: 11px;
+  }
+
+  .save-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+  }
+
+  .load-btn {
+    background: linear-gradient(135deg, #007bff 0%, #6610f2 100%);
+    border: none;
+    padding: 5px 12px;
+    border-radius: 4px;
+    color: white;
+    font-weight: 500;
+    font-size: 11px;
+  }
+
+  .form-select.excel-select {
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 5px 8px;
+    font-size: 11px;
+    background: white;
+  }
+
+  .excel-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 5px;
+  }
+
+  .excel-subtitle {
+    font-size: 11px;
+    opacity: 0.9;
+  }
+
+  /* Scrollbar styling */
+  .excel-table-container::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+
+  .excel-table-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  .excel-table-container::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 6px;
+  }
+
+  .excel-table-container::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
+
+  /* Loading animation */
+  .loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .excel-table th,
+    .excel-table td {
+      padding: 2px;
+      font-size: 9px;
+    }
+
+    .excel-cell {
+      width: 40px;
+      min-width: 40px;
+      height: 24px;
+    }
+
+    .remarks-cell {
+      width: 80px;
+      min-width: 80px;
+    }
+  }
+</style>
+
+<div class="container-fluid py-4" style="margin-left: -30px;">
+  <div class="excel-container">
+    <!-- Header -->
+    <div class="excel-header">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <div class="excel-title">📊 Excel-like Marks Entry System</div>
+          <div class="excel-subtitle">Enter examination marks for multiple subjects with automatic grading</div>
+        </div>
+        <div>
+          <button class="btn save-btn" onclick="saveAllMarks()">
+            <i class="fas fa-save me-2"></i>Save All Changes
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="excel-toolbar">
+      <div class="row g-3 align-items-end">
+        <div class="col-md-2">
+          <label class="form-label fw-bold">Academic Year</label>
+          <select class="form-select excel-select" id="academicYearSelect" onchange="loadData()">
+            <option value="">Select Year</option>
+            {% for year in academic_years %}
+            <option value="{{ year.id }}" {% if year.id == selected_year_id %}selected{% endif %}>{{ year.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label fw-bold">Term</label>
+          <select class="form-select excel-select" id="termSelect" onchange="loadData()">
+            <option value="">Select Term</option>
+            {% for term in terms %}
+            <option value="{{ term.id }}" {% if term.id == selected_term_id %}selected{% endif %}>{{ term.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label fw-bold">Exam Type</label>
+          <select class="form-select excel-select" id="examTypeSelect" onchange="loadData()">
+            {% for exam_type in exam_types %}
+            <option value="{{ exam_type }}" {% if exam_type == selected_exam_type %}selected{% endif %}>{{ exam_type }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-6 text-end">
+          <small class="text-muted">
+            <i class="fas fa-info-circle me-1"></i>
+            Select criteria above to automatically load the spreadsheet
+          </small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Excel Table -->
+    <div class="excel-table-container" id="tableContainer">
+      <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+      </div>
+
+      <table class="excel-table" id="marksTable" style="table-layout: auto;">
+        <thead>
+          <tr>
+            <th class="row-number">#</th>
+            <th>Adm. No</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Class</th>
+            <th>Str.</th>
+            {% for subject in subjects %}
+            <th title="{{ subject.name }}">{{ subject.name[:3]|lower }}<br><small></small></th>
+            <th title="{{ subject.name }}">{{ subject.name[:3]|lower }}<br><small></small></th>
+            <th title="{{ subject.name }}">{{ subject.name[:3]|lower }}<br><small></small></th>
+            {% endfor %}
+            <th>TT<br>Agg.</th>
+            <th>Div</th>
+            <th>Rank</th>
+            <th>Pos. in Stream<br><small>(out of stream total)</small></th>
+            <th>Pos. in Class<br><small>(out of class total)</small></th>
+            <th class="remarks-cell">Remarks</th>
+          </tr>
+        </thead>
+        <tbody id="marksTableBody">
+          <!-- Data will be loaded dynamically -->
+          <tr>
+            <td colspan="100" class="text-center py-5 text-muted">
+              <i class="fas fa-table fa-3x mb-3"></i>
+              <br>
+              <strong>Select criteria above to populate the Excel sheet</strong>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Success/Error Modals -->
+<div class="modal fade" id="successModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title"><i class="fas fa-check-circle me-2"></i>Success</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p id="successMessage">All marks have been saved successfully!</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="errorModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title"><i class="fas fa-exclamation-triangle me-2"></i>Error</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p id="errorMessage">An error occurred while saving marks.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Helper functions for parsing existing data
+function extractPointsFromRemarks(remarks) {
+  if (!remarks || remarks === '--') return '--';
+  // Extract points from format like "Points: 3 | Good performance"
+  const pointsMatch = remarks.match(/Points:\s*(\d+)/);
+  return pointsMatch ? pointsMatch[1] : '--';
+}
+
+function calculateDivisionFromPoints(totalPoints) {
+  if (totalPoints === '--' || isNaN(totalPoints)) return '--';
+  const points = parseInt(totalPoints);
+  if (points >= 4 && points <= 12) return 'Div1';
+  if (points >= 13 && points <= 23) return 'Div2';
+  if (points >= 24 && points <= 29) return 'Div3';
+  if (points >= 30 && points <= 34) return 'Div4';
+  if (points >= 35) return 'Ungraded';
+  return '--';
+}
+
+function generateRemarksFromPoints(totalPoints, subjectCount) {
+  if (totalPoints === '--' || isNaN(totalPoints)) return '--';
+  const points = parseInt(totalPoints);
+  const avgPoints = subjectCount > 0 ? points / subjectCount : 0;
+
+  if (avgPoints >= 1 && avgPoints <= 2) return 'Excellent performance';
+  if (avgPoints >= 3 && avgPoints <= 4) return 'Very good performance';
+  if (avgPoints >= 5 && avgPoints <= 6) return 'Good performance';
+  if (avgPoints >= 7 && avgPoints <= 8) return 'Fair performance';
+  return 'Needs improvement';
+}
+
+function calculateGrade(percentage) {
+  if (percentage >= 80) return '1';
+  else if (percentage >= 75) return '2';
+  else if (percentage >= 65) return '3';
+  else if (percentage >= 60) return '4';
+  else if (percentage >= 55) return '5';
+  else if (percentage >= 50) return '6';
+  else if (percentage >= 45) return '7';
+  else if (percentage >= 40) return '8';
+  else return '9';
+}
+
+function calculatePoints(percentage) {
+  if (percentage >= 80) return 1;
+  else if (percentage >= 75) return 2;
+  else if (percentage >= 65) return 3;
+  else if (percentage >= 60) return 4;
+  else if (percentage >= 55) return 5;
+  else if (percentage >= 50) return 6;
+  else if (percentage >= 45) return 7;
+  else if (percentage >= 40) return 8;
+  else return 9;
+}
+
+function calculateDivision(totalPoints) {
+  if (totalPoints >= 4 && totalPoints <= 12) return 'Div1';
+  else if (totalPoints >= 13 && totalPoints <= 23) return 'Div2';
+  else if (totalPoints >= 24 && totalPoints <= 29) return 'Div3';
+  else if (totalPoints >= 30 && totalPoints <= 34) return 'Div4';
+  else return 'U';
+}
+
+function generateRemarks(totalAggregate, subjectCount) {
+  if (subjectCount == 0) return "No subjects to evaluate.";
+  
+  if (totalAggregate <= 12) return "Excellent performance! Outstanding achievement.";
+  else if (totalAggregate <= 23) return "Very good work. Continue to excel.";
+  else if (totalAggregate <= 29) return "Good performance. Room for improvement in some areas.";
+  else if (totalAggregate <= 34) return "Satisfactory performance. Needs to work harder.";
+  else return "Poor performance. Immediate attention needed.";
+}
+
+function loadData(callback) {
+  const yearId = $('#academicYearSelect').val();
+  const termId = $('#termSelect').val();
+  const examType = $('#examTypeSelect').val();
+
+  if (!yearId || !termId || !examType) {
+    alert('Please select Academic Year, Term, and Exam Type');
+    return;
+  }
+
+  $('#loadingOverlay').show();
+
+  $.ajax({
+    url: '/teacher/load-marks-data',
+    method: 'GET',
+    data: {
+      academic_year_id: yearId,
+      term_id: termId,
+      exam_type: examType
+    },
+    success: function(response) {
+      $('#loadingOverlay').hide();
+      if (response.success) {
+        currentData = response;
+        renderExcelTable(response.pupils, response.subjects, response.existing_marks || {}, response.stream_totals || {}, response.class_totals || {});
+        if (typeof callback === 'function') callback(response);
+      } else {
+        alert('Error: ' + response.message);
+      }
+    },
+    error: function() {
+      $('#loadingOverlay').hide();
+      alert('Error loading data');
+    }
+  });
+}
+
+function renderExcelTable(pupils, subjects, existingMarks = {}) {
+  let html = '';
+
+  if (pupils.length === 0) {
+    html = '<tr><td colspan="20" class="text-center py-5 text-muted"><i class="fas fa-users fa-3x mb-3"></i><br><strong>No pupils found for selected criteria</strong></td></tr>';
+  } else {
+    // First pass: calculate totals and prepare data
+    const pupilTotals = [];
+    pupils.forEach((pupil, index) => {
+      let totalPoints = 0;
+      let subjectCount = 0;
+      let pupilData = { pupil, index, totalPoints: 0, subjectsData: {} };
+
+      subjects.forEach(subject => {
+        const existingKey = `${pupil.id}_${subject.id}`;
+        const existingData = existingMarks[existingKey];
+        let marks = null;
+        let grade = '--';
+        let points = '--';
+
+        if (existingData) {
+          marks = existingData.marks_obtained;
+          grade = existingData.grade;
+          points = extractPointsFromRemarks(existingData.remarks);
+        }
+
+        if (marks !== null && !isNaN(marks)) {
+          if (points === '--') {
+            // Calculate if not in remarks
+            grade = calculateGrade(marks);
+            points = calculatePoints(marks);
+          }
+          totalPoints += parseInt(points) || 0;
+          subjectCount += 1;
+        }
+
+        pupilData.subjectsData[subject.id] = { marks, grade, points };
+      });
+
+      pupilData.totalPoints = totalPoints;
+      pupilData.subjectCount = subjectCount;
+      pupilTotals.push(pupilData);
+    });
+
+    // Calculate ranks by class and stream
+    const classStreamGroups = {};
+    pupilTotals.forEach(pupilData => {
+      const key = `${pupilData.pupil.class_name}_${pupilData.pupil.stream_name}`;
+      if (!classStreamGroups[key]) classStreamGroups[key] = [];
+      classStreamGroups[key].push(pupilData);
+    });
+
+    Object.values(classStreamGroups).forEach(group => {
+      group.sort((a, b) => b.totalPoints - a.totalPoints); // descending
+      group.forEach((pupilData, rankIndex) => {
+        pupilData.rank = rankIndex + 1;
+      });
+    });
+
+    // Second pass: build HTML
+    pupilTotals.forEach(pupilData => {
+      const { pupil, index, totalPoints, subjectCount, rank, subjectsData } = pupilData;
+      const division = totalPoints > 0 ? (subjectCount === 1 ? 
+        (totalPoints === 1 ? 'Div1' : totalPoints === 2 ? 'Div2' : totalPoints === 3 ? 'Div3' : totalPoints === 4 ? 'Div4' : 'U') : 
+        calculateDivision(totalPoints)) : '--';
+      const remarks = totalPoints > 0 ? generateRemarksFromPoints(totalPoints, subjectCount) : '--';
+
+      html += `<tr data-pupil-id="${pupil.id}">
+        <td class="row-number">${index + 1}</td>
+        <td class="student-info">${pupil.admission_number}</td>
+        <td class="student-info">${pupil.first_name}</td>
+        <td class="student-info">${pupil.last_name}</td>
+        <td class="student-info">${pupil.class_name || ''}</td>
+        <td class="student-info">${pupil.stream_name || ''}</td>`;
+
+      subjects.forEach(subject => {
+        const { marks, grade, points } = subjectsData[subject.id];
+        const markId = `mark_${pupil.id}_${subject.id}`;
+        const gradeId = `grade_${pupil.id}_${subject.id}`;
+        const pointsId = `points_${pupil.id}_${subject.id}`;
+
+        if (subject.can_edit) {
+          html += `<td><input type="number" class="excel-cell" id="${markId}" min="0" max="100" step="0.5" value="${marks || ''}" onchange="calculateAll('${pupil.id}')"></td>`;
+        } else {
+          html += `<td><input type="number" class="excel-cell disabled-cell" id="${markId}" min="0" max="100" step="0.5" value="${marks || ''}" disabled readonly style="background-color: #f8f9fa; color: #6c757d;"></td>`;
+        }
+
+        html += `<td><span class="excel-cell grade-cell" id="${gradeId}">${grade}</span></td>`;
+        html += `<td><span class="excel-cell grade-cell" id="${pointsId}">${points}</span></td>`;
+      });
+
+      html += `<td><span class="excel-cell grade-cell" id="total_aggregate_${pupil.id}">${totalPoints || '--'}</span></td>`;
+      html += `<td><span class="excel-cell grade-cell" id="division_${pupil.id}">${division}</span></td>`;
+      html += `<td><span class="excel-cell grade-cell" id="rank_${pupil.id}">${rank || '--'}</span></td>`;
+      html += `<td><span class="excel-cell grade-cell" id="stream_position_${pupil.id}">${pupil.stream_position || '--'}</span></td>`;
+      html += `<td><span class="excel-cell grade-cell" id="class_position_${pupil.id}">${pupil.class_position || '--'}</span></td>`;
+      html += `<td class="remarks-cell"><span class="excel-cell" id="remarks_${pupil.id}">${remarks}</span></td>`;
+
+      html += '</tr>';
+    });
+  }
+
+  $('#marksTableBody').html(html);
+
+  // Update headers with actual totals
+  if (pupils.length > 0) {
+    const streamTotal = pupils[0].stream_total;
+    const classTotal = pupils[0].class_total;
+    $('#marksTable thead th').eq(12).html('Pos. in Stream<br><small>(out of ' + streamTotal + ')</small>');
+    $('#marksTable thead th').eq(13).html('Pos. in Class<br><small>(out of ' + classTotal + ')</small>');
+  }
+}
+
+function calculateAll(pupilId) {
+  // Collect all marks for this pupil (only for subjects teacher can edit)
+  const subjectMarks = {};
+  let hasMarks = false;
+
+  currentData.subjects.forEach(subject => {
+    if (subject.can_edit) {  // Only calculate for subjects teacher can edit
+      const markInput = $(`#mark_${pupilId}_${subject.id}`);
+      const marks = parseFloat(markInput.val());
+      if (!isNaN(marks)) {
+        subjectMarks[subject.id] = marks;
+        hasMarks = true;
+      }
+    }
+  });
+
+  if (!hasMarks) {
+    // Clear all fields
+    currentData.subjects.forEach(subject => {
+      $(`#grade_${pupilId}_${subject.id}`).text('--');
+      $(`#points_${pupilId}_${subject.id}`).text('--');
+    });
+    $(`#total_aggregate_${pupilId}`).text('--');
+    $(`#division_${pupilId}`).text('--');
+    $(`#rank_${pupilId}`).text('--');
+    $(`#remarks_${pupilId}`).text('--');
+    return;
+  }
+
+  // Calculate locally
+  let totalPoints = 0;
+  let subjectCount = 0;
+
+  for (const [subjectId, marks] of Object.entries(subjectMarks)) {
+    const grade = calculateGrade(marks);
+    const points = calculatePoints(marks);
+    $(`#grade_${pupilId}_${subjectId}`).text(grade);
+    $(`#points_${pupilId}_${subjectId}`).text(points);
+    totalPoints += points;
+    subjectCount += 1;
+  }
+
+  // Update overall
+  let division = '--';
+  let remarks = '--';
+  if (subjectCount === 1) {
+    // For single subject, base division on grade
+    const grade = parseInt(Object.keys(subjectMarks).map(subjectId => {
+      const marks = subjectMarks[subjectId];
+      return calculateGrade(marks);
+    })[0]);
+    if (grade === 1) division = 'Div1';
+    else if (grade === 2) division = 'Div2';
+    else if (grade === 3) division = 'Div3';
+    else if (grade === 4) division = 'Div4';
+    else division = 'Ungraded';
+    remarks = generateRemarksFromPoints(totalPoints, subjectCount);
+  } else {
+    // For multiple subjects, use aggregate
+    division = calculateDivision(totalPoints);
+    remarks = generateRemarksFromPoints(totalPoints, subjectCount);
+  }
+  $(`#total_aggregate_${pupilId}`).text(totalPoints);
+  $(`#division_${pupilId}`).text(division);
+  $(`#remarks_${pupilId}`).text(remarks);
+
+  // Recalculate ranks for all pupils
+  updateAllRanks();
+}
+
+function updateAllRanks() {
+  // Collect totals for all pupils
+  const pupilTotals = [];
+  currentData.pupils.forEach(pupil => {
+    let totalPoints = 0;
+    currentData.subjects.forEach(subject => {
+      const pointsText = $(`#points_${pupil.id}_${subject.id}`).text();
+      const points = parseInt(pointsText) || 0;
+      totalPoints += points;
+    });
+    pupilTotals.push({ id: pupil.id, totalPoints, className: pupil.class_name, streamName: pupil.stream_name });
+  });
+
+  // Group by class and stream
+  const groups = {};
+  pupilTotals.forEach(p => {
+    const key = `${p.className}_${p.streamName}`;
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(p);
+  });
+
+  // Sort and assign ranks
+  Object.values(groups).forEach(group => {
+    group.sort((a, b) => b.totalPoints - a.totalPoints);
+    group.forEach((p, index) => {
+      $(`#rank_${p.id}`).text(index + 1);
+    });
+  });
+}
+
+function saveAllMarks() {
+  const yearId = $('#academicYearSelect').val();
+  const termId = $('#termSelect').val();
+  const examType = $('#examTypeSelect').val();
+
+  if (!yearId || !termId || !examType) {
+    alert('Please select all criteria before saving');
+    return;
+  }
+
+  const marksData = [];
+  let hasData = false;
+
+  // Collect all marks for each subject (only for subjects teacher can edit)
+  currentData.subjects.forEach(subject => {
+    if (!subject.can_edit) {
+      return; // Skip subjects teacher cannot edit
+    }
+
+    const subjectMarks = {
+      subject_id: subject.id,
+      pupil_marks: []
+    };
+
+    currentData.pupils.forEach(pupil => {
+      const markInput = $(`#mark_${pupil.id}_${subject.id}`);
+      const marks = parseFloat(markInput.val());
+      const remarks = $(`#remarks_${pupil.id}`).text();
+
+      if (!isNaN(marks)) {
+        subjectMarks.pupil_marks.push({
+          pupil_id: pupil.id,
+          marks_obtained: marks,
+          remarks: remarks
+        });
+        hasData = true;
+      }
+    });
+
+    if (subjectMarks.pupil_marks.length > 0) {
+      marksData.push(subjectMarks);
+    }
+  });
+
+  if (!hasData) {
+    alert('Please enter at least one mark before saving');
+    return;
+  }
+
+  // Show loading
+  $('#loadingOverlay').show();
+
+  $.ajax({
+    url: '/teacher/save-marks',
+    method: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify({
+      academic_year_id: yearId,
+      term_id: termId,
+      exam_type: examType,
+      marks_data: marksData
+    }),
+    success: function(response) {
+      $('#loadingOverlay').hide();
+      if (response.success) {
+        // Refresh table and then show success modal so positions appear immediately
+        loadData(function() {
+          $('#successMessage').text('All marks have been saved successfully!');
+          $('#successModal').modal('show');
+        });
+      } else {
+        $('#errorMessage').text(response.message);
+        $('#errorModal').modal('show');
+      }
+    },
+    error: function() {
+      $('#loadingOverlay').hide();
+      $('#errorMessage').text('An error occurred while saving marks.');
+      $('#errorModal').modal('show');
+    }
+  });
+}
+
+// Initialize on page load
+$(document).ready(function() {
+  console.log('Page loaded, enter_marks template initialized');
+  console.log('auto_load_data value: {% if auto_load_data %}true{% else %}false{% endif %}');
+
+  // Check if data should be auto-loaded from server
+  {% if auto_load_data %}
+  console.log('Auto-loading data from server...');
+  try {
+    // Use the data passed from server
+    currentData = {
+      pupils: {{ pupils|tojson }},
+      subjects: {{ subjects|tojson }}
+    };
+    console.log('Loaded pupils:', currentData.pupils);
+    console.log('Loaded subjects:', currentData.subjects);
+    const existingMarks = {{ existing_results|tojson }};
+    console.log('Existing marks:', existingMarks);
+    renderExcelTable(currentData.pupils, currentData.subjects, existingMarks);
+    console.log('Table rendered successfully');
+    // If server-sent pupils array is empty, fallback to AJAX load (sometimes routing doesn't include pupils)
+    if (!currentData.pupils || currentData.pupils.length === 0) {
+      console.log('No pupils in server payload, falling back to AJAX load...');
+      loadData();
+    }
+  } catch (error) {
+    console.error('Error in auto-loading:', error);
+    // Fallback to AJAX loading
+    console.log('Falling back to AJAX loading...');
+    loadData();
+  }
+  {% else %}
+  console.log('No auto-load data available, using AJAX');
+  // Auto-load if all criteria are selected
+  if ($('#academicYearSelect').val() && $('#termSelect').val() && $('#examTypeSelect').val()) {
+    console.log('Auto-loading data via AJAX...');
+    loadData();
+  } else {
+    console.log('Not auto-loading - missing criteria');
+  }
+  {% endif %}
+});
+</script>
+{% endblock %}

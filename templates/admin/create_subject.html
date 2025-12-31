@@ -1,97 +1,91 @@
-<div class="container-fluid">
-      <div class="row">
-        <div class="col-12">
-          <div
-            class="d-flex justify-content-center align-items-center mt-3 mb-4"
-          >
-        <h2>Create Subject</h2>
-          </div>
-          <div class="form-container" style="max-width: 1400px; margin: 0 auto;">
-            {% with messages = get_flashed_messages() %} {% if messages %}
-            <div id="flash-message" class="alert alert-info" role="alert">
-              {% for message in messages %} {{ message }} {% endfor %}
-            </div>
-            {% endif %} {% endwith %}
-            <div class="card" style="background-color: lightblue">
-              <div class="card-body">
-                <form
-                  method="POST"
-                  action="{{ url_for('admin.create_subject') }}"
-                  onsubmit="return checkDuplicate()"
-                >
-                  <div class="mb-3">
-                    <label for="name" class="form-label">Subject Name</label>
-                    <div class="input-group">
-                      <span class="input-group-text">
-                        <i class="bi bi-book"></i>
-                      </span>
-                      <input
-                        type="text"
-                        class="form-control"
-                        id="name"
-                        name="name"
-                        oninput="this.value = this.value.toLowerCase().replace(/\b\w/g, l => l.toUpperCase())"
-                        required
-                      />
-                    </div>
-                    <div
-                      id="duplicate-error"
-                      class="text-danger mt-1"
-                      style="display: none"
-                    >
-                      This subject name already exists!
-                    </div>
-                  </div>
-                  <div class="d-flex justify-content-center">
-                    <button type="submit" class="btn btn-success">
-                      Create Subject
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
+{% extends "admin/dashboard.html" %} {% block title %}Create Subject - Admin
+Dashboard{% endblock %} {% block content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Create Subject</h5>
+      </div>
+      <div class="card-body">
+        {% with messages = get_flashed_messages() %} {% if messages %}
+        <div id="flash-message" class="alert alert-info" role="alert">
+          {% for message in messages %} {{ message }} {% endfor %}
         </div>
+        {% endif %} {% endwith %}
+
+        <form
+          method="POST"
+          action="{{ url_for('admin.create_subject') }}"
+          onsubmit="return checkDuplicate()"
+        >
+          <div class="mb-3">
+            <label for="name" class="form-label">Subject Name</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-book"></i></span>
+              <input
+                type="text"
+                class="form-control"
+                id="name"
+                name="name"
+                oninput="this.value = this.value.toLowerCase().replace(/\b\w/g, l => l.toUpperCase())"
+                required
+              />
+            </div>
+            <div
+              id="duplicate-error"
+              class="text-danger mt-1"
+              style="display: none"
+            >
+              This subject name already exists!
+            </div>
+          </div>
+          <div class="d-flex justify-content-center">
+            <button type="submit" class="btn btn-success">
+              <i class="bi bi-plus-circle"></i> Create Subject
+            </button>
+          </div>
+        </form>
       </div>
     </div>
+  </div>
+</div>
 
-    <script>
-      // FORCE CAPITAL LETTERS IMMEDIATELY WHILE TYPING
-      const subjectInput = document.getElementById("name");
+<script>
+  // FORCE CAPITAL LETTERS IMMEDIATELY WHILE TYPING
+  const subjectInput = document.getElementById("name");
 
-      subjectInput.addEventListener("input", function () {
-        // Convert input to uppercase
-        this.value = this.value.toUpperCase();
+  subjectInput.addEventListener("input", function () {
+    // Convert input to uppercase
+    this.value = this.value.toUpperCase();
 
-        // Check for duplicate
-        const name = this.value.trim();
-        const errorDiv = document.getElementById("duplicate-error");
-        if (name) {
-          fetch(`/admin/check_duplicate/subject/${encodeURIComponent(name)}`)
-            .then((response) => response.json())
-            .then((data) => {
-              errorDiv.style.display = data.exists ? "block" : "none";
-            })
-            .catch((err) => console.error("Error checking duplicate:", err));
-        } else {
-          errorDiv.style.display = "none";
-        }
-      });
+    // Check for duplicate
+    const name = this.value.trim();
+    const errorDiv = document.getElementById("duplicate-error");
+    if (name) {
+      fetch(`/admin/check_duplicate/subject/${encodeURIComponent(name)}`)
+        .then((response) => response.json())
+        .then((data) => {
+          errorDiv.style.display = data.exists ? "block" : "none";
+        })
+        .catch((err) => console.error("Error checking duplicate:", err));
+    } else {
+      errorDiv.style.display = "none";
+    }
+  });
 
-      // Hide flash message after 2 seconds
-      setTimeout(() => {
-        const flash = document.getElementById("flash-message");
-        if (flash) flash.style.display = "none";
-      }, 2000);
+  // Hide flash message after 2 seconds
+  setTimeout(() => {
+    const flash = document.getElementById("flash-message");
+    if (flash) flash.style.display = "none";
+  }, 2000);
 
-      function checkDuplicate() {
-        const errorDiv = document.getElementById("duplicate-error");
-        if (errorDiv.style.display === "block") {
-          alert("Please choose a unique subject name.");
-          return false;
-        }
-        return true;
-      }
-    </script>
-
-    
+  function checkDuplicate() {
+    const errorDiv = document.getElementById("duplicate-error");
+    if (errorDiv.style.display === "block") {
+      alert("Please choose a unique subject name.");
+      return false;
+    }
+    return true;
+  }
+</script>
+{% endblock %}

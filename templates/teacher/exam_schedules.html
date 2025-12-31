@@ -1,0 +1,44 @@
+{% extends "teacher/dashboard.html" %} {% block title %}Exam Schedules - Teacher
+Dashboard{% endblock %} {% block content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Exam Schedules</h5>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-striped table-hover">
+            <thead>
+              <tr>
+                <th>Exam Name</th>
+                <th>Subject</th>
+                <th>Class</th>
+                <th>Term</th>
+                <th>Exam Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for schedule in exam_schedules %}
+              <tr>
+                <td>{{ schedule.name }}</td>
+                <td>{{ schedule.subject.name }}</td>
+                <td>{{ schedule.school_class.name }}</td>
+                <td>{{ schedule.term.name }}</td>
+                <td>{{ schedule.exam_date.strftime('%Y-%m-%d') }}</td>
+              </tr>
+              {% endfor %} {% if not exam_schedules %}
+              <tr>
+                <td colspan="5" class="text-center">
+                  No exam schedules found for current term
+                </td>
+              </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
